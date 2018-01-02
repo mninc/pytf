@@ -1,6 +1,9 @@
 # Installation
 Run `pip install pytf2`.
 
+# Maker
+This module is made by me with help from any of the users listed [here](https://github.com/mninc/pytf/graphs/contributors).
+Feel free to hit me up on discord `manic#5170` or on my [steam profile](http://steamcommunity.com/id/manic_/).
 # Usage
 ```python
 from pytf2 import manager
@@ -91,5 +94,25 @@ All functions require the steamid64 of the player.
     <tr>
         <td>bp_last_online(self, steamid)</td>
         <td>unix timestamp when the user last visited backpack.tf</td>
+    </tr>
+    <tr>
+        <td>bp_admin(self, steamid)</td>
+        <td>True if the user is a backpack.tf admin</td>
+    </tr>
+    <tr>
+        <td>bp_donated(self, steamid)</td>
+        <td>the amount the user has donated to backpack.tf</td>
+    </tr>
+    <tr>
+        <td>bp_premium(self, steamid)</td>
+        <td>True if the user has backpack.tf premium</td>
+    </tr>
+    <tr>
+        <td>bp_premium_months_gifted(self, steamid)</td>
+        <td>how many months of backpack.tf premium the user has gifted</td>
+    </tr>
+    <tr>
+        <td>bp_can_trade(self, steamid)</td>
+        <td>returns True if it is ok to trade with the user</td>
     </tr>
 </table>

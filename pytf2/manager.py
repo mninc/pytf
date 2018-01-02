@@ -112,3 +112,28 @@ class Manager:
         steamid = str(steamid)
         return self.bp_user_info([steamid])[steamid].last_online
 
+    def bp_admin(self, steamid):
+        steamid = str(steamid)
+        return self.bp_user_info([steamid])[steamid].admin
+
+    def bp_donated(self, steamid):
+        steamid = str(steamid)
+        return self.bp_user_info([steamid])[steamid].donated
+
+    def bp_premium(self, steamid):
+        steamid = str(steamid)
+        return self.bp_user_info([steamid])[steamid].premium
+
+    def bp_premium_months_gifted(self, steamid):
+        steamid = str(steamid)
+        return self.bp_user_info([steamid])[steamid].premium_months_gifted
+
+    def bp_can_trade(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.bans:
+            return True
+        if user.bans.steamrep_scammer or user.bans.bp_bans["all"]:
+            return False
+        return True
+
