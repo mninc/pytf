@@ -12,22 +12,22 @@ tf2_manager = manager.Manager(cache=True, bp_api_key='', bp_user_token='')
 
 # Nicknames
 Some site names are shortened to keep function names at a reasonable length
-<table class="tg">
+<table>
   <tr>
-    <th class="tg-yw4l">Shortened name</th>
-    <th class="tg-yw4l">Site</th>
+    <th>Shortened name</th>
+    <th>Site</th>
   </tr>
   <tr>
-    <td class="tg-yw4l">bp</td>
-    <td class="tg-yw4l"><a href='https://backpack.tf/' >backpack.tf</a></td>
+    <td>bp</td>
+    <td><a href='https://backpack.tf/' >backpack.tf</a></td>
   </tr>
   <tr>
-    <td class="tg-yw4l">mp</td>
-    <td class="tg-yw4l"><a href='https://marketplace.tf/' >marketplace.tf</a></td>
+    <td>mp</td>
+    <td><a href='https://marketplace.tf/' >marketplace.tf</a></td>
   </tr>
   <tr>
-    <td class="tg-yw4l">sr</td>
-    <td class="tg-yw4l"><a href='https://steamrep.com/' >steamrep</a></td>
+    <td>sr</td>
+    <td><a href='https://steamrep.com/' >steamrep</a></td>
   </tr>
 </table>
 
@@ -47,7 +47,7 @@ Takes no arguments
 
 Returns nothing
 
-## `bp_get_prices(self, raw=0, since=None)`
+## `bp_get_prices(self, raw: bool=0, since: int=0)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)
 
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
@@ -55,11 +55,41 @@ Returns nothing
 
 Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if successful, otherwise raises and exception.
 
-## `bp_get_currencies(self, raw=0, parse=True)`
+## `bp_get_currencies(self, raw: int=0, parse: bool=True)`
 [Gets the backpack.tf currency info](https://backpack.tf/api/docs/IGetCurrencies)
 
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
 * **parse** - If false, will return the dict from backpack.tf. If true, parses each currency with `currency.py` and returns a dict like this:
+```json
+{'metal': <pytf2.currency.Currency object>, 'hat': <pytf2.currency.Currency object>, 'keys': <pytf2.currency.Currency object>, 'earbuds': <pytf2.currency.Currency object>}
+```
 
+## `bp_user_info(self, steamids: list, parse: bool=True)`
+[Gets user info from backpack.tf](https://backpack.tf/api/docs/user_info). Will use the cache where possible.
 
+* **steamids** - list of steamid64s to check
+* **parse** - if false, returns the dict from backpack.tf. If true, parses each user with `bp_user.py` and returns a dict of id to object
 
+## Generic User Info functions
+All of these functions operate the same way - they return a specific piece of info about a player. 
+They all use the `bp_user_info` to get info and use the cache where possible.
+
+All functions require the steamid64 of the player.
+<table>
+    <tr>
+        <th>Function</th>
+        <th>Returns</th>
+    </tr>
+    <tr>
+        <td>`bp_user_name(self, steamid)`</td>
+        <td>steam name of the user</td>
+    </tr>
+    <tr>
+        <td>`bp_avatar(self, steamid)`</td>
+        <td>URL of the user's profile picture</td>
+    </tr>
+    <tr>
+        <td>`bp_last_online(self, steamid)`</td>
+        <td>unix timestamp when the user last visited backpack.tf</td>
+    </tr>
+</table>
