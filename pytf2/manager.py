@@ -1,4 +1,5 @@
 import requests
+from pytf2 import currency
 
 
 class Manager:
@@ -17,8 +18,6 @@ class Manager:
 
     def bp_get_prices(self, raw=0, since=None):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices
-        # Uses the IGetPrices API
-        # Returns the raw json (too complicated for parsing
 
         if not self.bp_api_key:
             raise ValueError("bp_api_key not set")
@@ -35,3 +34,28 @@ class Manager:
             raise Exception(response["response"]["message"])
 
         return response
+
+    def bp_get_currencies(self, raw=0, parse=True):
+        # backpack.tf docs - https://backpack.tf/api/docs/IGetCurrencies
+
+        if not self.bp_api_key:
+            raise ValueError("bp_api_key not set")
+
+        data = {"key": self.bp_api_key}
+        if raw:
+            data["raw"] = raw
+
+        response = requests.get("https://backpack.tf/api/IGetCurrencies/v1", data=data).json()
+
+        if not response["response"]["success"]:
+            raise Exception(response["response"]["message"])
+
+        if not parse:
+            return response
+
+        to_return = {}
+
+        for item in response["response"]["currencies"]:
+            to_return[item] = currency.Currency(response["response"]["currencies"]["item"])
+
+        return to_return

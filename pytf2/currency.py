@@ -1,0 +1,18 @@
+class Currency:
+    def __init__(self, data):
+        self.name = data.get("name", "")
+        self.quality = data.get("quality", 6)
+        self.priceindex = data.get("priceindex", 0)
+        self.single = data.get("single")
+        self.plural = data.get("plural")
+        self.round = data.get("round")
+        self.blanket = data.get("blanket")
+        self.craftable = data.get("craftable")
+        self.tradable = data.get("tradable")
+        self.defindex = data.get("defindex")
+        self._price = data.get("price")
+        self.value = self._price.get("value")
+        self.currency = self._price.get("currency")
+        self.difference = self._price.get("difference")
+        self.last_update = self._price.get("last_update")
+        self.value_high = self._price.get("value_high")

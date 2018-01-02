@@ -50,4 +50,16 @@ Returns nothing
 ## `bp_get_prices(self, raw=0, since=None)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)
 
+* **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
+* **since** - If set, only returns prices that have a last_update value greater than or equal to this UNIX time.
+
+Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if successful, otherwise raises and exception.
+
+## `bp_get_currencies(self, raw=0, parse=True)`
+[Gets the backpack.tf currency info](https://backpack.tf/api/docs/IGetCurrencies)
+
+* **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
+* **parse** - If false, will return the dict from backpack.tf. If true, parses each currency with `currency.py` and returns a dict like this:
+
+
 
