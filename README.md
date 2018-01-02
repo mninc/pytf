@@ -12,12 +12,6 @@ tf2_manager = manager.Manager(cache=True, bp_api_key='', bp_user_token='')
 
 # Nicknames
 Some site names are shortened to keep function names at a reasonable length
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg .tg-yw4l{vertical-align:top}
-</style>
 <table class="tg">
   <tr>
     <th class="tg-yw4l">Shortened name</th>
@@ -25,15 +19,15 @@ Some site names are shortened to keep function names at a reasonable length
   </tr>
   <tr>
     <td class="tg-yw4l">bp</td>
-    <td class="tg-yw4l">[backpack.tf](https://backpack.tf/)</td>
+    <td class="tg-yw4l"><a href='https://backpack.tf/' >backpack.tf</a></td>
   </tr>
   <tr>
     <td class="tg-yw4l">mp</td>
-    <td class="tg-yw4l">[marketplace.tf](https://marketplace.tf/)</td>
+    <td class="tg-yw4l"><a href='https://marketplace.tf/' >marketplace.tf</a></td>
   </tr>
   <tr>
     <td class="tg-yw4l">sr</td>
-    <td class="tg-yw4l">[steamrep](https://steamrep.com/)</td>
+    <td class="tg-yw4l"><a href='https://steamrep.com/' >steamrep</a></td>
   </tr>
 </table>
 
