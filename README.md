@@ -61,7 +61,7 @@ Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if s
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
 * **parse** - If false, will return the dict from backpack.tf. If true, parses each currency with `currency.py` and returns a dict like this:
 ```json
-{'metal': <pytf2.currency.Currency object>, 'hat': <pytf2.currency.Currency object>, 'keys': <pytf2.currency.Currency object>, 'earbuds': <pytf2.currency.Currency object>}
+{"metal": <pytf2.currency.Currency object>, "hat": <pytf2.currency.Currency object>, "keys": <pytf2.currency.Currency object>, "earbuds": <pytf2.currency.Currency object>}
 ```
 
 ## `bp_user_info(self, steamids: list, parse: bool=True)`
@@ -81,15 +81,15 @@ All functions require the steamid64 of the player.
         <th>Returns</th>
     </tr>
     <tr>
-        <td>`bp_user_name(self, steamid)`</td>
+        <td>bp_user_name(self, steamid)</td>
         <td>steam name of the user</td>
     </tr>
     <tr>
-        <td>`bp_avatar(self, steamid)`</td>
+        <td>bp_avatar(self, steamid)</td>
         <td>URL of the user's profile picture</td>
     </tr>
     <tr>
-        <td>`bp_last_online(self, steamid)`</td>
+        <td>bp_last_online(self, steamid)</td>
         <td>unix timestamp when the user last visited backpack.tf</td>
     </tr>
 </table>
