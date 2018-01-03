@@ -262,3 +262,61 @@ tf2_manager.bp_create_listing([bp_create_listing_data(1, {"metal": 1}, "64267294
                                bp_create_listing_data(0, {"metal": 3, "keys": 2}, {"quality": "Unique",
                                                                                    "item_name": "B.M.O.C."}, details="buying this")])
 ```
+
+## `bp_delete_listings(self, listing_ids, parse: bool=True)`
+Deletes the specified listings
+
+* **listing_ids** - an array of listing ids to delete
+* **parse** - if False, returns data from backpack.tf. If True, returns `{"deleted": number of listings deleted, "errors": [list of errors]}`
+
+## `bp_delete_listing(self, listing_id, parse: bool=True)`
+Deletes a single listing
+
+* **listing_id** - listing id to delete
+* **parse** - whether or not to parse the response
+
+Returns the same as the `bp_delete_listings` method
+
+# `mp_user_is_banned(self, steamid)`
+Checks if the user is banned on marketplace.tf
+
+* **steamid** - steamid64 of the user
+
+Returns `False, None` if the user is not banned, `True, reason` if the user is banned
+
+## `mp_deals(self, num: int=100, skip: int=0, parse: bool=True)`
+Gets marketplace.tf deals. Sorted by $ deal value descending
+
+* **num** - number of deals to fetch. Max 1000
+* **skip** - skip first x deals. used to paginate
+* **parse** - if False, returns the data from marketplace.tf. If True, returns:
+```json
+{"num_items": "how many deals found",
+"items": ["mp_deal.py Deal object", ...]}
+```
+
+## `mp_dashboard_items(self, parse: bool=True)`
+Gets all the items currently on your marketplace.tf dashboard and available for sale
+
+* **parse** - If False, returns the response from marketplace.tf. If True, returns:
+```json
+{"num_item_groups": 0, "total_items": 1, "items": ["mp_item.py Item object"]}
+```
+
+## `mp_sales(self, num: int=100, start_before: int=time(), parse: bool=True)`
+Gets your marketplace.tf sales, most recent first
+
+* **num** - how many sales to fetch. max 500
+* **start_before** - unix timestamp to fetch sales from before. used to paginate
+* **parse** - if False, returns response from marketplace.tf. If True, returns 
+```json
+["mp_sale.py Sale object", ...]
+```
+
+## `sr_reputation(steamid, parse: bool=True)`
+Gets user info from steamrep
+
+Note - it is recommended to use the `bp_user_info` method instead
+
+* **steamid** - the user's steamid64
+* **parse** - if False, will return the response from steamrep. If True, returns a `sr_reputation.py` Reputation object

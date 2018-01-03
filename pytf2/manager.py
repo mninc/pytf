@@ -1,15 +1,18 @@
 import requests
-from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data
+from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
+    sr_reputation
+from time import time
 
 
 class Manager:
-    def __init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str=''):
+    def __init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str=''):
         self.cache = cache
         self.bp_api_key = bp_api_key
         if bp_user_token:
             self.bp_user_token = bp_user_token
         else:
             self.bp_user_token = self.bp_get_user_token()
+        self.mp_api_key = mp_api_key
         self.mp_item_cache = {}
         self.bp_user_cache = {}
 
@@ -486,6 +489,129 @@ class Manager:
             data["item"] = item_or_id
 
         return data
+
+    def bp_delete_listings(self, listing_ids, parse: bool=True):
+        if not self.bp_user_token:
+            raise ValueError("bp_user_token not set")
+
+        data = {"token": self.bp_user_token,
+                "listing_ids": listing_ids}
+
+        response = requests.delete("https://backpack.tf/api/classifieds/delete/v1", json=data).json()
+
+        if "message" in response:
+            raise Exception(response["message"])
+
+        if not parse:
+            return response
+
+        return response["deleted"], response["errors"]
+
+    def bp_delete_listing(self, listing_id, parse: bool=True):
+        return self.bp_delete_listings([listing_id], parse)
+
+    def mp_user_is_banned(self, steamid):
+        if not self.mp_api_key:
+            raise ValueError("mp_api_key not set")
+
+        steamid = str(steamid)
+
+        data = {"key": self.mp_api_key,
+                "steamid": steamid}
+
+        response = requests.get("https://marketplace.tf/api/Bans/GetUserBan/v1", data=data).json()
+
+        if not response["success"]:
+            raise Exception(response)
+
+        if not response["is_banned"]:
+            return False, None
+
+        return True, response["ban_type"]
+
+    def mp_deals(self, num: int=100, skip: int=0, parse: bool=True):
+        if not self.mp_api_key:
+            raise ValueError("mp_api_key not set")
+
+        data = {"key": self.mp_api_key,
+                "num": num,
+                "skip": skip}
+
+        response = requests.post("https://marketplace.tf/api/Deals/GetDeals/v2", data=data).json()
+
+        if not response["success"]:
+            raise Exception(response)
+
+        if not parse:
+            return response
+
+        to_return = {"num_items": response["num_items"],
+                     "items": []}
+
+        for item in response["items"]:
+            to_return["items"].append(mp_deal.Deal(item))
+
+        return to_return
+
+    def mp_dashboard_items(self, parse: bool=True):
+        if not self.mp_api_key:
+            raise ValueError("mp_api_key not set")
+
+        data = {"key": self.mp_api_key}
+
+        response = requests.get("https://marketplace.tf/api/Seller/GetDashboardItems/v2", data=data).json()
+
+        if not response["success"]:
+            raise Exception(response)
+
+        if not parse:
+            return response
+
+        to_return = {"num_item_groups": response["num_item_groups"],
+                     "total_items": response["total_items"],
+                     "items": []}
+
+        for item in response["items"]:
+            to_return["items"].append(mp_item.Item(item))
+
+        return to_return
+
+    def mp_sales(self, num: int=100, start_before: int=time(), parse: bool=True):
+        if not self.mp_api_key:
+            raise ValueError("mp_api_key not set")
+
+        data = {"key": self.mp_api_key,
+                "num": num,
+                "start_before": start_before}
+
+        response = requests.get("https://marketplace.tf/api/Seller/GetSales/v2", data=data).json()
+
+        if not response["success"]:
+            raise Exception(response)
+
+        if not parse:
+            return response
+
+        to_return = []
+        for sale in response["sales"]:
+            to_return.append(mp_sale.Sale(sale))
+
+        return to_return
+
+    @staticmethod
+    def sr_reputation(steamid, parse: bool=True):
+        response = requests.get("http://steamrep.com/api/beta4/reputation/" + str(steamid), data={"json": 1,
+                                                                                                  "tagdetails": 1,
+                                                                                                  "extended": 1}).json()
+
+        if not parse:
+            return response
+
+        else:
+            return sr_reputation.Reputation(response["steamrep"])
+
+
+
 
 
 
