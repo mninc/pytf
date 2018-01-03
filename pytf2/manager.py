@@ -287,6 +287,9 @@ class Manager:
 
         response = requests.get("https://backpack.tf/api/classifieds/search/v1", data=data).json()
 
+        if "response" in response:
+            raise Exception(response["response"])
+
         if not parse:
             return response
 
