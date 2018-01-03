@@ -32,6 +32,10 @@ Some site names are shortened to keep function names at a reasonable length
     <td>sr</td>
     <td><a href='https://steamrep.com/' >steamrep</a></td>
   </tr>
+  <tr>
+    <td>st</td>
+    <td><a href='https://github.com/Zwork101/steam-trade' >steam-trade</a></td>
+  </tr>
 </table>
 
 # Methods
@@ -50,6 +54,13 @@ Takes no arguments
 
 Returns nothing
 
+## `st_item_to_str(item)`
+Changes a steam-trade EconItem object to a string. Please note - this method may not work for all items. Use with care
+
+* **item** - A steam-trade EconItem object
+
+Returns the name of the item
+
 ## `bp_get_prices(self, raw: bool=0, since: int=0)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)
 
@@ -62,9 +73,9 @@ Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if s
 [Gets the backpack.tf currency info](https://backpack.tf/api/docs/IGetCurrencies)
 
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
-* **parse** - If false, will return the dict from backpack.tf. If true, parses each currency with `currency.py` and returns a dict like this:
+* **parse** - If false, will return the dict from backpack.tf. If true, parses each currency with `bp_currency.py` and returns a dict like this:
 ```
-{"metal": <pytf2.currency.Currency object>, "hat": <pytf2.currency.Currency object>, "keys": <pytf2.currency.Currency object>, "earbuds": <pytf2.currency.Currency object>}
+{"metal": <pytf2.bp_currency.Currency object>, "hat": <pytf2.bp_currency.Currency object>, "keys": <pytf2.bp_currency.Currency object>, "earbuds": <pytf2.bp_currency.Currency object>}
 ```
 
 ## `bp_user_info(self, steamids: list, parse: bool=True)`
@@ -113,6 +124,141 @@ All functions require the steamid64 of the player.
     </tr>
     <tr>
         <td>bp_can_trade(self, steamid)</td>
-        <td>returns True if it is ok to trade with the user</td>
+        <td>True if it is ok to trade with the user</td>
+    </tr>
+    <tr>
+        <td>bp_voting_rep(self, steamid)</td>
+        <td>the voting reputation of the user (None if no rep)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_rank(self, steamid)</td>
+        <td>the TF2 inventory rank of the user (None if inventory not parsed by backpack.tf, False if not ranked)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_value(self, steamid)</td>
+        <td>the value of the user's TF2 inventory (None if inventory not parsed)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_metal(self, steamid)</td>
+        <td>the raw metal (ref, rec, scrap) value of the user's inventory (None if not parsed)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_keys(self, steamid)</td>
+        <td>the amount of raw keys in the user's inventory (None if not parsed)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_slots_total(self, steamid)</td>
+        <td>the total amount of slots in the user's inventory (None if not parsed)</td>
+    </tr>
+    <tr>
+        <td>bp_backpack_slots_used(self, steamid)</td>
+        <td>the amount of slots used in the user's inventory (None if not parsed)</td>
+    </tr>
+    <tr>
+        <td>bp_positive_trust(self, steamid)</td>
+        <td>how many positive trusts the user has</td>
+    </tr>
+    <tr>
+        <td>bp_negative_trust(self, steamid)</td>
+        <td>how many negative trusts the user has</td>
     </tr>
 </table>
+
+## `bp_get_price_history(self, item, quality=None, tradable: int=1, craftable=1, priceindex: int=0, appid: int=440, parse: bool=True)`
+[Gets the suggested price history from backpack.tf](https://backpack.tf/api/docs/IGetPriceHistory)
+
+* **item** - The item - this can be a name or a definition index
+* **quality** - The quality - this can be a name or a definition index
+* **tradable** - The item's tradability. Use 'Tradable' or 1 to signify that the item should be tradable, or 'Non-Tradable' or 0 to signify that the item should not be tradable
+* **craftable** - The item's craftability. Use 'Craftable' or 1 to signify that the item should be craftable, or 'Non-Craftable' or 0 to signify that the item should not be craftable
+* **priceindex** - The item's priceindex. See [this](https://backpack.tf/api/docs/IGetPrices) page and scroll down to `Priceindex` for more info
+* **appid** - Steam app to return data for. Default: 440 (Team Fortress 2). Valid options: 440, 570, 730
+* **parse** - if false, returns the dict from backpack.tf. If true, returns an array of `bp_price_history.py` objects
+
+## `bp_classifieds_search(self, data: dict, parse: bool=True)`
+[Searches backpack.tf classifieds](https://backpack.tf/api/docs/classifieds_search)
+
+* **data** - a dict of all the data to be sent to backpack.tf (as written [here](https://backpack.tf/api/docs/classifieds_search)). 'key' paramater is not required.
+* **parse** - if false, returns the dict from backpack.tf. If true, returns an array like this, including `bp_classified.py` objects:
+```
+{'sell': [<pytf2.bp_classified.Classified object>, ...], 'buy': [<pytf2.bp_classified.Classified object>, ...], 'total': 98, 'sell_total': 64, 'sell_fold': True, 'buy_total': 34, 'buy_fold': False}
+```
+
+## `bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False)`
+Creates data for use with the `bp_classifieds_search` method
+
+* **name** - name of the item including qualities etc. Works well with the `st_item_to_str` method
+* **user** - a specific user's steamid4 to get the listing from
+* **unusual** - manual override to set the quality to unusual (for searching for generic unusuals)
+* **set_elevated** - manually set the elevated quality of the item
+
+Returns a dict. Normal usage:
+```python
+tf2_manager.bp_classifieds_search(tf2_manager.bp_classified_make_data("Item name"))
+```
+
+## `bp_get_special_items(self, appid=440)`
+[Gets the internal backpack.tf item placeholders](https://backpack.tf/api/docs/IGetSpecialItems)
+
+* **appid** - the appid of the game (note - anything other than 440 (TF2) will not work. I'm just leaving this in because the docs say you can use 570 and 730 as well)
+
+Returns the response from backpack.tf
+
+## `bp_get_user_token(self)`
+Returns the backpack.tf user token. API key must be set
+
+## `bp_send_heartbeat(self, automatic: str="all")`
+Send a heartbeat to backpack.tf. Bumps listings where possible and gives you the lightning bolt on your listings
+
+* **automatic** - which listings to set as automatic. 'all' makes all of them, 'sell' only makes sell orders auto
+
+Returns how many listings were bumped
+
+## `bp_my_listings(self, item_names: bool=False, intent=None, inactive: int=1, parse: bool=True)`
+Returns your listings from backpack.tf
+
+* **item_names** - if True, each listing item will have a 'name' property
+* **intent** - set to 0 for only buy listings and 1 for only sell listings
+* **inactive** - set to 0 to hide inactive listings
+* **parse** - if False, returns the response from backpack.tf. If True, returns:
+```
+{'cap': 127, 'promotes_remaining': 0, 'listings': [<pytf2.bp_classified.Classified object>, ...]}
+```
+
+## `bp_create_listing(self, listings: list, parse: bool=True)`
+Creates listings
+
+* **listings** - an array of listings to create (like [this](https://backpack.tf/api/docs/create_listings))
+* **parse** - if False, returns the response from backpack.tf. If True, returns:
+```
+{"successful": ["item name (buying) or id (selling)", ...], "unsuccessful": {"item": reason, ...}}
+```
+
+## `bp_create_listing_create_data(intent: int, currencies: dict, item_or_id, offers: int=1, buyout: int=1, promoted: int=0, details: str="")`
+Creates a listing dict for use in the `bp_create_listing` method as part of a list.
+
+* **intent** - 0 (Buy) or 1 (Sell)
+* **currencies** - the price for the listing, eg:
+```json
+{"metal": 10, "keys": 11}
+```
+* **item_or_id** - if the intent is sell, this is the current id of the item. Can also be the id of an item in you marketplace.tf inventory if you have integration set up.
+If the intent is to buy, this is a dict object:
+```json
+{"quality": "quality name or id. Supports elevated qualities, just use a space (eg 'Strange Unusual')", 
+ "item_name": "name of the item or it's defindex. supports killstreaks and australium (prefix the name with it)",
+ "craftable": "0 or 'Non-Craftable' if the item isn't craftable",
+ "priceindex": "priceindex of the item (see https://backpack.tf/api/docs/IGetPrices and scroll down to 'priceindex'"}
+ ```
+ * **offers** - set to 0 to only accept steam friend requests
+ * **buyout** - set to 0 to allow negotiation (blue trade icon)
+ * **promoted** - set to 1 to promote the listing (sell orders only, must have a promote slot free)
+ * **details** - the details for the listing
+ 
+ Returns a dict for use in the `bp_create_listing` method.
+ Example:
+ ```python
+tf2_manager.bp_create_listing([bp_create_listing_data(1, {"metal": 1}, "6426729449", details="buy this item"),
+                               bp_create_listing_data(0, {"metal": 3, "keys": 2}, {"quality": "Unique",
+                                                                                   "item_name": "B.M.O.C."}, details="buying this")])
+```

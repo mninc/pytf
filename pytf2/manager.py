@@ -1,12 +1,15 @@
 import requests
-from pytf2 import currency, bp_user
+from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data
 
 
 class Manager:
     def __init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str=''):
         self.cache = cache
         self.bp_api_key = bp_api_key
-        self.bp_user_token = bp_user_token
+        if bp_user_token:
+            self.bp_user_token = bp_user_token
+        else:
+            self.bp_user_token = self.bp_get_user_token()
         self.mp_item_cache = {}
         self.bp_user_cache = {}
 
@@ -15,6 +18,33 @@ class Manager:
 
     def clear_bp_user_cache(self):
         self.bp_user_cache = {}
+
+    @staticmethod
+    def st_item_to_str(item):
+        name = item.market_name
+        # Assume it's craftable
+        craftable = True
+        # Assume it's not unusual with no effect
+        effect = ""
+        unusual = False
+        if name.startswith("Unusual "):
+            unusual = True
+        if item.descriptions != list():
+            for line in item.descriptions:
+                if line["value"] == "( Not Usable in Crafting )":
+                    craftable = False
+                elif line["value"].startswith("★ Unusual Effect: ") and unusual:
+                    name = name[8:]
+                    effect = line["value"][18:]
+
+        # Combine craftability and effect where applicable
+        if not craftable and effect:
+            name = "Non-Craftable " + effect + " " + name
+        elif not craftable:
+            name = "Non-Craftable " + name
+        elif effect:
+            name = effect + " " + name
+        return name
 
     def bp_get_prices(self, raw: bool=0, since: int=0):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices
@@ -56,7 +86,7 @@ class Manager:
         to_return = {}
 
         for item in response["response"]["currencies"]:
-            to_return[item] = currency.Currency(response["response"]["currencies"][item])
+            to_return[item] = bp_currency.Currency(response["response"]["currencies"][item])
 
         return to_return
 
@@ -136,4 +166,338 @@ class Manager:
         if user.bans.steamrep_scammer or user.bans.bp_bans["all"]:
             return False
         return True
+
+    def bp_voting_rep(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.voting:
+            return
+        return user.voting.reputation
+
+    def bp_backpack_rank(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].ranking
+
+    def bp_backpack_value(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].value
+
+    def bp_backpack_metal(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].metal
+
+    def bp_backpack_keys(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].keys
+
+    def bp_backpack_slots_total(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].slots["total"]
+
+    def bp_backpack_slots_used(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.inventory:
+            return
+        if "440" not in user.inventory.inventories:
+            return
+        return user.inventory.inventories["440"].slots["used"]
+
+    def bp_positive_trust(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.trust:
+            return
+        return user.trust.positive
+
+    def bp_negative_trust(self, steamid):
+        steamid = str(steamid)
+        user = self.bp_user_info([steamid])[steamid]
+        if not user.trust:
+            return
+        return user.trust.negative
+
+    def bp_get_price_history(self, item, quality=None, tradable=1, craftable=1, priceindex: int=0, appid: int=440,
+                             parse: bool=True):
+        # backpack.tf docs - https://backpack.tf/api/docs/IGetPriceHistory
+
+        if not self.bp_api_key:
+            raise ValueError("bp_api_key not set")
+
+        data = {"key": self.bp_api_key,
+                "item": item,
+                "tradable": tradable,
+                "craftable": craftable,
+                "priceindex": priceindex,
+                "appid": appid}
+
+        if quality:
+            data["quality"] = quality
+
+        response = requests.get("https://backpack.tf/api/IGetPriceHistory/v1", data=data).json()
+
+        if not response["response"]["success"]:
+            raise Exception(response["response"]["message"])
+
+        if not parse:
+            return response
+
+        to_return = []
+        for history in response["response"]["history"]:
+            to_return.append(bp_price_history.PriceHistory(history))
+
+        return to_return
+
+    def bp_classifieds_search(self, data: dict, parse: bool=True):
+        # backpack.tf docs - https://backpack.tf/api/docs/classifieds_search
+
+        if not self.bp_api_key:
+            raise ValueError("bp_api_key not set")
+
+        data["key"] = self.bp_api_key
+
+        response = requests.get("https://backpack.tf/api/classifieds/search/v1", data=data).json()
+
+        if not parse:
+            return response
+
+        to_return = {"sell": [],
+                     "buy": [],
+                     "total": response["total"]}
+
+        if response["sell"]:
+            to_return["sell_total"] = response["sell"]["total"]
+            to_return["sell_fold"] = response["sell"]["fold"]
+            for listing in response["sell"]["listings"]:
+                to_return["sell"].append(bp_classified.Classified(listing, bool(data.get("item_names", False))))
+        else:
+            to_return["sell_total"] = 0
+            to_return["sell_fold"] = False
+
+        if response["buy"]:
+            to_return["buy_total"] = response["buy"]["total"]
+            to_return["buy_fold"] = response["buy"]["fold"]
+            for listing in response["buy"]["listings"]:
+                to_return["buy"].append(bp_classified.Classified(listing, bool(data.get("item_names", False))))
+        else:
+            to_return["buy_total"] = 0
+            to_return["buy_fold"] = False
+
+        return to_return
+
+    @staticmethod
+    def bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False):
+        # Take off any unneccesary prefixes
+        if name[:4] == "The ":
+            name = name[4:]
+        if name[:14] == "Non-Craftable ":
+            name = name[14:]
+            craftable = -1
+        else:
+            craftable = 1
+        if name[:4] == "The ":
+            name = name[4:]
+
+        # Assume it's unique
+        quality = 6
+        elevated = False
+        use_elevated = False
+        for _quality in item_data.qualities:
+            if name.startswith(_quality):
+                quality = item_data.qualities[_quality]
+                elevated = quality
+                name = name[len(_quality) + 1:]
+
+        # Assume it has no killstreak
+        killstreak = 0
+        for _killstreak in item_data.killstreaks:
+            if name.startswith(_killstreak):
+                killstreak = item_data.killstreaks[_killstreak]
+                name = name[len(_killstreak) + 1:]
+
+        # Assume it's not australium
+        australium = -1
+        if name.startswith("Australium"):
+            australium = 1
+            name = name[11:]
+            quality = item_data.qualities["Strange"]
+
+        # Assume it's not unusual
+        effect = False
+        for _effect in item_data.effects:
+            if name.startswith(_effect):
+                effect = item_data.effects[_effect]
+                name = name[len(_effect) + 1:]
+                quality = item_data.qualities["Unusual"]
+                if elevated:  # Item already has quality (probably Strange Unusual)
+                    use_elevated = True
+
+        data = {"item_names": True,
+                "page_size": 30,
+                "killstreak_tier": str(killstreak),
+                "australium": str(australium),
+                "quality": str(quality),
+                "craftable": str(craftable),
+                "item": name,
+                "fold": 0}
+
+        if effect:
+            data["particle"] = effect
+        if use_elevated:
+            data["elevated"] = elevated
+
+        # Things we were told at the beginning
+        if unusual:
+            data["quality"] = item_data.qualities["Unusual"]
+        if set_elevated:
+            data["elevated"] = set_elevated
+        if user:
+            data["steamid"] = user
+
+        return data
+
+    def bp_get_special_items(self, appid: int=440):
+        if not self.bp_api_key:
+            raise ValueError("bp_api_key not set")
+
+        data = {"key": self.bp_api_key,
+                "appid": appid}
+        return requests.get("https://backpack.tf/api/IGetSpecialItems/v1", data=data).json()
+
+    def bp_get_user_token(self):
+        if not self.bp_api_key:
+            raise ValueError("bp_api_key not set")
+
+        data = {"key": self.bp_api_key}
+
+        response = requests.get("https://backpack.tf/api/aux/token/v1", data=data).json()
+
+        if "message" in response:
+            raise Exception(response["message"])
+
+        return response["token"]
+
+    def bp_send_heartbeat(self, automatic: str="all"):
+        if not self.bp_user_token:
+            raise ValueError("bp_user_token not set")
+
+        data = {"token": self.bp_user_token,
+                "automatic": automatic}
+
+        response = requests.post("https://backpack.tf/api/aux/heartbeat/v1", data=data).json()
+
+        if "message" in response:
+            raise Exception(response["message"])
+
+        return response["bumped"]
+
+    def bp_my_listings(self, item_names: bool=False, intent=None, inactive: int=1, parse: bool=True):
+        if not self.bp_user_token:
+            raise ValueError("bp_user_token not set")
+
+        data = {"token": self.bp_user_token,
+                "inactive": inactive}
+
+        if item_names:
+            data["item_names"] = True
+        if type(intent) == int:
+            data["intent"] = intent
+
+        response = requests.get("https://backpack.tf/api/classifieds/listings/v1", data=data).json()
+
+        if "message" in response:
+            raise Exception(response["message"])
+
+        if not parse:
+            return response
+
+        to_return = {"cap": response.get("cap", 0),
+                     "promotes_remaining": response.get("promotes_remaining", 0),
+                     "listings": []}
+
+        for listing in response["listings"]:
+            to_return["listings"].append(bp_classified.Classified(listing, item_names))
+
+        return to_return
+
+    def bp_create_listing(self, listings: list, parse: bool=True):
+        if not self.bp_user_token:
+            raise ValueError("bp_user_token not set")
+
+        data = {"token": self.bp_user_token,
+                "listings": listings}
+
+        response = requests.post("https://backpack.tf/api/classifieds/list/v1", json=data).json()
+
+        if "message" in response:
+            raise Exception(response["message"])
+
+        if not parse:
+            return response
+
+        to_return = {"successful": [],
+                     "unsuccessful": {}}
+        for item, success in response["listings"].items():
+            if "created" in success:
+                to_return["successful"].append(item)
+            else:
+                to_return["unsuccessful"][item] = success["error"]
+
+        return to_return
+
+    @staticmethod
+    def bp_create_listing_create_data(intent: int, currencies: dict, item_or_id, offers: int=1, buyout: int=1,
+                                      promoted: int=0, details: str=""):
+        data = {"intent": intent,
+                "currencies": currencies,
+                "offers": offers,
+                "buyout": buyout,
+                "promoted": promoted,
+                "details": details}
+
+        if intent:
+            data["id"] = item_or_id
+        else:
+            data["item"] = item_or_id
+
+        return data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
