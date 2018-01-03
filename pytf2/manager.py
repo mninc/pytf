@@ -2,6 +2,7 @@ import requests
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
     sr_reputation
 from time import time
+from lxml import html
 
 
 class Manager:
@@ -597,6 +598,46 @@ class Manager:
             to_return.append(mp_sale.Sale(sale))
 
         return to_return
+
+    def mp_item_info(self, sku):
+        if sku in self.mp_item_cache:
+            return self.mp_item_cache[sku]["price"], self.mp_item_cache[sku]["amount"]
+
+        chars1 = "\nn$ each" + chr(92)
+        chars2 = "\nn, Availbe" + chr(92)
+
+        page = requests.get("https://marketplace.tf/items/" + sku + "/")
+        tree = html.fromstring(page.content)
+        price = tree.xpath("""//div[@class="current-bid-amount"]/text()""")
+        amount = tree.xpath("""//div[@class="current-bids"]/text()""")
+        price = ''.join(price)
+        amount = ''.join(amount)
+        price2 = []
+        amount2 = []
+        for char in price:
+            if char in chars1:
+                pass
+            else:
+                price2.append(char)
+        price = ''.join(price2)
+        for char in amount:
+            if char in chars2:
+                pass
+            else:
+                amount2.append(char)
+        amount = ''.join(amount2)
+        
+        if self.cache:
+            self.mp_item_cache[sku]["price"] = price
+            self.mp_item_cache[sku]["amount"] = amount
+
+        return price, amount
+    
+    def mp_item_price(self, sku):
+        return self.mp_item_info(sku)[0]
+    
+    def mp_item_amount(self, sku):
+        return self.mp_item_info(sku)[1]
 
     @staticmethod
     def sr_reputation(steamid, parse: bool=True):

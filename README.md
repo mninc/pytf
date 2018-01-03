@@ -313,6 +313,27 @@ Gets your marketplace.tf sales, most recent first
 ["mp_sale.py Sale object", ...]
 ```
 
+## `mp_item_info(self, sku)`
+Gets info on an item from marketplace.tf
+
+* **sku** - the sku of the item
+
+Returns the price of the item and the number available 
+
+## `mp_item_price(self, sku)`
+Gets info on the price of an item from marketplace.tf
+
+* **sku** - the sku of the item
+
+Returns the price
+
+## `mp_item_amount(self, sku)`
+Gets info on the amount of an item available from marketplace.tf
+
+* **sku** - the sku of the item
+
+Returns the amount
+
 ## `sr_reputation(steamid, parse: bool=True)`
 Gets user info from steamrep
 
