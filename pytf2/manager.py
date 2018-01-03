@@ -318,7 +318,7 @@ class Manager:
         return to_return
 
     @staticmethod
-    def bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False):
+    def bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False, page_size=10, fold=1):
         # Take off any unneccesary prefixes
         if name[:4] == "The ":
             name = name[4:]
@@ -365,13 +365,13 @@ class Manager:
                     use_elevated = True
 
         data = {"item_names": True,
-                "page_size": 30,
+                "page_size": page_size,
                 "killstreak_tier": str(killstreak),
                 "australium": str(australium),
                 "quality": str(quality),
                 "craftable": str(craftable),
                 "item": name,
-                "fold": 0}
+                "fold": fold}
 
         if effect:
             data["particle"] = effect

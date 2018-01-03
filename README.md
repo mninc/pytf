@@ -184,13 +184,15 @@ All functions require the steamid64 of the player.
 {'sell': [<pytf2.bp_classified.Classified object>, ...], 'buy': [<pytf2.bp_classified.Classified object>, ...], 'total': 98, 'sell_total': 64, 'sell_fold': True, 'buy_total': 34, 'buy_fold': False}
 ```
 
-## `bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False)`
+## `bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False, page_size=10, fold=1)`
 Creates data for use with the `bp_classifieds_search` method
 
 * **name** - name of the item including qualities etc. Works well with the `st_item_to_str` method
 * **user** - a specific user's steamid4 to get the listing from
 * **unusual** - manual override to set the quality to unusual (for searching for generic unusuals)
 * **set_elevated** - manually set the elevated quality of the item
+* **page_size** - how many listings to load for sell and buy orders. Max 30
+* **fold** - if 0, disables listing folding
 
 Returns a dict. Normal usage:
 ```python
