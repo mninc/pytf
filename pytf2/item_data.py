@@ -135,9 +135,16 @@ qualities = {"Genuine": 1,
              "Unusual": 5,
              "Vintage": 3,
              "Haunted": 13,
-             "Collector's": 14}
+             "Collector's": 14,
+             "Decorated Weapon": 15}
 
 killstreaks = {"None": 0,
                "Killstreak": 1,
                "Specialized Killstreak": 2,
                "Professional Killstreak": 3}
+
+wear = ["Factory New",
+        "Minimal Wear",
+        "Field-Tested",
+        "Well-Worn",
+        "Battle Scarred"]

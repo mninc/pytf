@@ -364,6 +364,10 @@ class Manager:
                 if elevated:  # Item already has quality (probably Strange Unusual)
                     use_elevated = True
 
+        for wear in item_data.wear:
+            if name.endswith("(" + wear + ")"):
+                quality = item_data.qualities["Decorated Weapon"]
+
         data = {"item_names": True,
                 "page_size": page_size,
                 "killstreak_tier": str(killstreak),
@@ -513,6 +517,11 @@ class Manager:
 
     def bp_delete_listing(self, listing_id, parse: bool=True):
         return self.bp_delete_listings([listing_id], parse)
+
+    @staticmethod
+    def bp_is_duped(itemid):
+        tree = html.fromstring(requests.get("https://backpack.tf/item" + str(itemid)).content)
+        return bool(tree.xpath("""//button[@id="dupe-modal-btn"]/text()"""))
 
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:

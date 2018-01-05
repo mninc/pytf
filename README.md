@@ -260,9 +260,10 @@ If the intent is to buy, this is a dict object:
  Returns a dict for use in the `bp_create_listing` method.
  Example:
  ```python
-tf2_manager.bp_create_listing([bp_create_listing_data(1, {"metal": 1}, "6426729449", details="buy this item"),
-                               bp_create_listing_data(0, {"metal": 3, "keys": 2}, {"quality": "Unique",
-                                                                                   "item_name": "B.M.O.C."}, details="buying this")])
+tf2_manager.bp_create_listing([tf2_manager.bp_create_listing_data(1, {"metal": 1}, "6426729449", details="buy this item"),
+                               tf2_manager.bp_create_listing_data(0, {"metal": 3, "keys": 2}, {"quality": "Unique",
+                                                                                               "item_name": "B.M.O.C."},
+                                                                  details="buying this")])
 ```
 
 ## `bp_delete_listings(self, listing_ids, parse: bool=True)`
@@ -278,6 +279,13 @@ Deletes a single listing
 * **parse** - whether or not to parse the response
 
 Returns the same as the `bp_delete_listings` method
+
+## `bp_is_duped(itemid)`
+Checks if the item is duped. This method does not require an API key. Due to the way it collects data this method may break in the future
+
+* **itemid** - the id of the item. This can be any id that works when put into [this page](http://backpack.tf/item/id).
+
+Returns True if the item is duped
 
 # `mp_user_is_banned(self, steamid)`
 Checks if the user is banned on marketplace.tf
