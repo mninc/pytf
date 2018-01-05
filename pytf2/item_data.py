@@ -148,3 +148,8 @@ wear = ["Factory New",
         "Field-Tested",
         "Well-Worn",
         "Battle Scarred"]
+wear_brackets = ["(Factory New)",
+                 "(Minimal Wear)",
+                 "(Field-Tested)",
+                 "(Well-Worn)",
+                 "(Battle Scarred)"]
