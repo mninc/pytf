@@ -9,9 +9,12 @@ Feel free to hit me up on discord `manic#5170` or on my [steam profile](http://s
 from pytf2 import manager
 tf2_manager = manager.Manager(cache=True, bp_api_key='', bp_user_token='')
 ```
+
+`__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='')`
 * cache - Keep results of APIs etc for use later without calling the API again. Useful for getting multiple bits of info from the same endpoint without receiving a cooldown
 * bp_api_key - [Your backpack.tf api key](https://backpack.tf/developer/apikey/view)
 * bp_user_token - [Your backpack.tf user token](https://backpack.tf/connections) (click 'Show Token')
+* mp_api_key - [Your marketplace.tf api key](https://marketplace.tf/apisettings)
 
 # Nicknames
 Some site names are shortened to keep function names at a reasonable length
