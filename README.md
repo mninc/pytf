@@ -7,7 +7,7 @@ Feel free to hit me up on discord `manic#5170` or on my [steam profile](http://s
 # Usage
 ```python
 from pytf2 import manager
-tf2_manager = manager.Manager(cache=True, bp_api_key='', bp_user_token='')
+tf2_manager = manager.Manager(params)
 ```
 
 `__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='')`
