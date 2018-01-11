@@ -64,7 +64,7 @@ class Bans:
         self.steamrep_scammer = True if "steamrep_scammer" in data else False
         self.steamrep_caution = True if "steamrep_caution" in data else False
         self.valve = ValveBans(data.get("valve", {}))
-        self.bp_bans = []
+        self.bp_bans = {}
         for ban_type in Bans.backpack_ban_types:
             self.bp_bans[ban_type] = False if ban_type not in data else BackpackBans(data[ban_type])
 
