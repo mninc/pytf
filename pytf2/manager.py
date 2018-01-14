@@ -3,6 +3,7 @@ from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_da
     sr_reputation
 from time import time
 from lxml import html
+from pytrade import EconItem
 
 
 class Manager:
@@ -49,6 +50,27 @@ class Manager:
         elif effect:
             name = effect + " " + name
         return name
+
+    @staticmethod
+    def s_get_inventory(user_id, game=440, parse: bool=True):
+        url = "http://steamcommunity.com/inventory/" + str(user_id) + "/" + str(game) + "/2?l=english&count=5000"
+
+        response = requests.get(url).json()
+
+        if not parse:
+            return response
+        
+        to_return = []
+        classid_item = {}
+        for item in response["descriptions"]:
+            classid_item[item["classid"]] = item
+
+        for item in response["assets"]:
+            item.update(classid_item[item["classid"]])
+            item = EconItem.Item(item)
+            to_return.append(item)
+        
+        return to_return
 
     def bp_get_prices(self, raw: bool=0, since: int=0):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices

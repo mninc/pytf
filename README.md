@@ -39,6 +39,10 @@ Some site names are shortened to keep function names at a reasonable length
     <td>st</td>
     <td><a href='https://github.com/Zwork101/steam-trade' >steam-trade</a></td>
   </tr>
+  <tr>
+    <td>s</td>
+    <td><a href='http://store.steampowered.com' >steam</a></td>
+  </tr>
 </table>
 
 # Methods
@@ -63,6 +67,14 @@ Changes a steam-trade EconItem object to a string. Please note - this method may
 * **item** - A steam-trade EconItem object
 
 Returns the name of the item
+
+##  `s_get_inventory(user_id, game=440, parse: bool=True)`
+Gets the inventory of a user
+
+* **user_id** - the steamid64 of the user
+* **game** - the id of the game to get inventory for (440 - TF2)
+* **parse** - if False, returns raw data from steam. If True, returns an array of 
+[steam-trade/EconItem](https://github.com/Zwork101/steam-trade/blob/master/pytrade/EconItem.py) objects.
 
 ## `bp_get_prices(self, raw: bool=0, since: int=0)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)
