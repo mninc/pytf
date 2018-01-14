@@ -545,6 +545,10 @@ class Manager:
         tree = html.fromstring(requests.get("https://backpack.tf/item" + str(itemid)).content)
         return bool(tree.xpath("""//button[@id="dupe-modal-btn"]/text()"""))
 
+    @staticmethod
+    def bp_parse_inventory(user):
+        requests.get("https://backpack.tf/profiles/" + str(user))
+
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:
             raise ValueError("mp_api_key not set")

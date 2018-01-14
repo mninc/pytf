@@ -302,6 +302,14 @@ Checks if the item is duped. This method does not require an API key. Due to the
 
 Returns True if the item is duped
 
+## `bp_parse_inventory(user)`
+Makes backpack.tf parse the inventory of the user (to enabble you to list items that just came into your inventory
+for example)
+
+* **user** - the steamid64 of the user
+
+Does not return anything
+
 # `mp_user_is_banned(self, steamid)`
 Checks if the user is banned on marketplace.tf
 
