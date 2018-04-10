@@ -43,12 +43,10 @@ class Classified:
             self.id = data.get("id")
             self.steamid = data.get("steamid")
             self.item = ClassifiedItem(0, data.get("item"), item_names)
+            self.currencies = ClassifiedValue(data.get("currencies"))
             self.offers = bool(data.get("offers", 0))
             self.buyout = bool(data.get("buyout", 0))
             self.details = data.get("details", "")
             self.created = data.get("created")
             self.bump = data.get("bump")
             self.automatic = bool(data.get("automatic", 0))
-
-
-
