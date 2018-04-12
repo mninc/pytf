@@ -556,11 +556,19 @@ class Manager:
             "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable, craftable, priceindex)).text
         if "Stats for this item are not available." in response:
             return 0
-        first = "inventories, there are <strong>"
-        last = "</strong> known instances of this item."
-        start = response.index(first) + len(first)
-        end = response.index(last, start)
-        return int(response[start:end])
+        try:
+            first = "inventories, there are <strong>"
+            last = "</strong> known instances of this item."
+            start = response.index(first) + len(first)
+            end = response.index(last, start)
+            return int(response[start:end])
+        except ValueError:
+            first = "inventories, there is <strong>"
+            last = "</strong> known instance of this item."
+            start = response.index(first) + len(first)
+            end = response.index(last, start)
+            if response[start:end] == "only one":
+                return 1
 
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:
