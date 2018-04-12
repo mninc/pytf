@@ -356,11 +356,13 @@ class Manager:
         quality = 6
         elevated = False
         use_elevated = False
-        for _quality in item_data.qualities:
-            if name.startswith(_quality):
-                quality = item_data.qualities[_quality]
-                elevated = quality
-                name = name[len(_quality) + 1:]
+        # Get around haunted phantasm effect being interpreted as haunted quality
+        if not name.startswith("Haunted Phantasm"):
+            for _quality in item_data.qualities:
+                if name.startswith(_quality):
+                    quality = item_data.qualities[_quality]
+                    elevated = quality
+                    name = name[len(_quality) + 1:]
 
         # Assume it has no killstreak
         killstreak = 0
