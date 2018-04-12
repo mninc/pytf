@@ -8,6 +8,7 @@ class ClassifiedItem:
     def __init__(self, intent, data, item_names):
         self.defindex = data.get("defindex")
         self.quality = data.get("quality")
+        self.attributes = data.get("attributes")
 
         if item_names:
             self.name = data.get("name")
@@ -20,7 +21,6 @@ class ClassifiedItem:
             self.quantity = data.get("quantity")
             self.origin = data.get("origin")
             self.style = data.get("style")
-            self.attributes = data.get("attributes")
 
 
 class Classified:
