@@ -303,14 +303,25 @@ Checks if the item is duped. This method does not require an API key. Due to the
 Returns True if the item is duped
 
 ## `bp_parse_inventory(user)`
-Makes backpack.tf parse the inventory of the user (to enabble you to list items that just came into your inventory
+Makes backpack.tf parse the inventory of the user (to enable you to list items that just came into your inventory
 for example)
 
 * **user** - the steamid64 of the user
 
 Does not return anything
 
-# `mp_user_is_banned(self, steamid)`
+## `bp_number_exist(quality: str, name: str, tradable: str="Tradable", craftable: str="Craftable", priceindex: int=0`
+Checks how many of that item exist
+
+* **quality** - the quality of the item (string not number)
+* **name** - the name of the item
+* **tradable** - if the item is tradable
+* **craftable** - if the item is craftable
+* **priceindex** - priceindex of the item
+
+Returns the number of items that exist, 0 if none.
+
+## `mp_user_is_banned(self, steamid)`
 Checks if the user is banned on marketplace.tf
 
 * **steamid** - steamid64 of the user

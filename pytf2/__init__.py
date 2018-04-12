@@ -547,7 +547,20 @@ class Manager:
 
     @staticmethod
     def bp_parse_inventory(user):
-        requests.get("https://backpack.tf/profiles/" + str(user))
+        requests.get("https://backpack.tf/_inventory/" + str(user))
+
+    @staticmethod
+    def bp_number_exist(quality: str, name: str, tradable: str="Tradable", craftable: str="Craftable",
+                        priceindex: int=0):
+        response = requests.get(
+            "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable, craftable, priceindex)).text
+        if "Stats for this item are not available." in response:
+            return 0
+        first = "inventories, there are <strong>"
+        last = "</strong> known instances of this item."
+        start = response.index(first) + len(first)
+        end = response.index(last, start)
+        return int(response[start:end])
 
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:
