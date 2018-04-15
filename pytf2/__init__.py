@@ -497,6 +497,9 @@ class Manager:
 
         to_return = {"successful": [],
                      "unsuccessful": {}}
+        if not response["listings"]:
+            return to_return
+
         for item, success in response["listings"].items():
             if "created" in success:
                 to_return["successful"].append(item)
@@ -555,7 +558,10 @@ class Manager:
     def bp_number_exist(quality: str, name: str, tradable: str="Tradable", craftable: str="Craftable",
                         priceindex: int=0):
         response = requests.get(
-            "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable, craftable, priceindex)).text
+            "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable, craftable, priceindex))
+        if not response.ok:
+            raise Exception("{} status code".format(response.status_code))
+        response = response.text
         if "Stats for this item are not available." in response:
             return 0
         try:
