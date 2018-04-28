@@ -307,7 +307,7 @@ class Manager:
 
         data["key"] = self.bp_api_key
 
-        response = requests.get("https://backpack.tf/api/classifieds/search/v1", data=data).json()
+        response = requests.get("https://backpack.tf/api/classifieds/search/v1", params=data).json()
 
         if "response" in response:
             raise Exception(response["response"])
