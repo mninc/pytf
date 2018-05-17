@@ -342,15 +342,11 @@ class Manager:
     @staticmethod
     def bp_classified_make_data(name, user=False, unusual: bool = False, set_elevated=False, page_size=10, fold=1):
         # Take off any unneccesary prefixes
-        if name[:4] == "The ":
-            name = name[4:]
         if name[:14] == "Non-Craftable ":
             name = name[14:]
             craftable = -1
         else:
             craftable = 1
-        if name[:4] == "The ":
-            name = name[4:]
 
         # Assume it's unique
         quality = 6
