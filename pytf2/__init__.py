@@ -377,7 +377,7 @@ class Manager:
         # Assume it's not unusual
         effect = False
         for _effect in item_data.effects:
-            if name.startswith(_effect):
+            if name.startswith(_effect + " "):
                 effect = item_data.effects[_effect]
                 name = name[len(_effect) + 1:]
                 quality = item_data.qualities["Unusual"]
