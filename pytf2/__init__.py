@@ -355,7 +355,7 @@ class Manager:
         # Get around haunted phantasm effect being interpreted as haunted quality
         if not name.startswith("Haunted Phantasm"):
             for _quality in item_data.qualities:
-                if name.startswith(_quality):
+                if name.startswith(_quality + " "):
                     quality = item_data.qualities[_quality]
                     elevated = quality
                     name = name[len(_quality) + 1:]
