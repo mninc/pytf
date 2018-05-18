@@ -352,7 +352,6 @@ class Manager:
         quality = 6
         elevated = False
         use_elevated = False
-        # Get around haunted phantasm effect being interpreted as haunted quality
         if not name.startswith("Haunted Phantasm") and name != "Strange Bacon Grease" and \
                 not name.startswith("Strange Filter") and not name.startswith("Strange Count") and \
                 not name.startswith("Strange Cosmetic") and name != "Vintage Tyrolean" and \
@@ -379,13 +378,14 @@ class Manager:
 
         # Assume it's not unusual
         effect = False
-        for _effect in item_data.effects:
-            if name.startswith(_effect + " "):
-                effect = item_data.effects[_effect]
-                name = name[len(_effect) + 1:]
-                quality = item_data.qualities["Unusual"]
-                if elevated:  # Item already has quality (probably Strange Unusual)
-                    use_elevated = True
+        if "Hot Heels" not in name:
+            for _effect in item_data.effects:
+                if name.startswith(_effect + " "):
+                    effect = item_data.effects[_effect]
+                    name = name[len(_effect) + 1:]
+                    quality = item_data.qualities["Unusual"]
+                    if elevated:  # Item already has quality (probably Strange Unusual)
+                        use_elevated = True
 
         for wear in item_data.wear_brackets:
             if name.endswith(wear):
