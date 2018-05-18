@@ -353,7 +353,10 @@ class Manager:
         elevated = False
         use_elevated = False
         # Get around haunted phantasm effect being interpreted as haunted quality
-        if not name.startswith("Haunted Phantasm"):
+        if not name.startswith("Haunted Phantasm") and name != "Strange Bacon Grease" and \
+                not name.startswith("Strange Filter") and not name.startswith("Strange Count") and \
+                not name.startswith("Strange Cosmetic") and name != "Vintage Tyrolean" and \
+                name != "Vintage Merryweather" and name != "Haunted Hat" and name != "Haunted Metal Scrap":
             for _quality in item_data.qualities:
                 if name.startswith(_quality + " "):
                     quality = item_data.qualities[_quality]
@@ -369,7 +372,7 @@ class Manager:
 
         # Assume it's not australium
         australium = -1
-        if name.startswith("Australium"):
+        if name.startswith("Australium") and name != "Australium Gold":
             australium = 1
             name = name[11:]
             quality = item_data.qualities["Strange"]
@@ -384,8 +387,8 @@ class Manager:
                 if elevated:  # Item already has quality (probably Strange Unusual)
                     use_elevated = True
 
-        for wear in item_data.wear:
-            if name.endswith("(" + wear + ")"):
+        for wear in item_data.wear_brackets:
+            if name.endswith(wear):
                 quality = item_data.qualities["Decorated Weapon"]
 
         data = {"item_names": True,
