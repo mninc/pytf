@@ -3,6 +3,9 @@ class ClassifiedValue:
         self.metal = data.get("metal", 0)
         self.keys = data.get("keys", 0)
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
 
 class ClassifiedItem:
     def __init__(self, intent, data, item_names):
