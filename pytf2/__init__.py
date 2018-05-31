@@ -355,7 +355,8 @@ class Manager:
         if not name.startswith("Haunted Phantasm") and name != "Strange Bacon Grease" and \
                 not name.startswith("Strange Filter") and not name.startswith("Strange Count") and \
                 not name.startswith("Strange Cosmetic") and name != "Vintage Tyrolean" and \
-                name != "Vintage Merryweather" and name != "Haunted Hat" and name != "Haunted Metal Scrap":
+                name != "Vintage Merryweather" and name != "Haunted Hat" and name != "Haunted Metal Scrap" and \
+                not name.startswith("Haunted Ghosts"):
             for _quality in item_data.qualities:
                 if name.startswith(_quality + " "):
                     quality = item_data.qualities[_quality]
