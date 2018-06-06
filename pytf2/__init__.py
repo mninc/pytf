@@ -403,7 +403,7 @@ class Manager:
 
         if effect:
             data["particle"] = effect
-        else:
+        elif quality == "Unusual":
             data["particle"] = 0
         if use_elevated:
             data["elevated"] = elevated
