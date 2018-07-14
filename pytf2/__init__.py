@@ -1,12 +1,15 @@
 import requests
+import aiohttp
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
-    sr_reputation
+    sr_reputation, exceptions
 from time import time
 from lxml import html
+import json
 
 
 class Manager:
-    def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = ''):
+    def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
+                 async: bool = False, async_client: aiohttp.ClientSession = None):
         self.cache = cache
         self.bp_api_key = bp_api_key
         if bp_user_token:
@@ -16,6 +19,49 @@ class Manager:
         self.mp_api_key = mp_api_key
         self.mp_item_cache = {}
         self.bp_user_cache = {}
+
+        if async:
+            if async_client:
+                self.async_client = async_client
+            else:
+                self.async_client = aiohttp.ClientSession()
+            self.request = self.async_request
+        else:
+            self.request = self.sync_request
+
+    @staticmethod
+    def sync_request(method, url, params=None, to_json=True):
+        if params:
+            response = requests.request(method, url, data=params)
+        else:
+            response = requests.request(method, url)
+
+        if not response.ok:
+            raise exceptions.BadStatusError(url, response.status_code)
+
+        if to_json:
+            return response.json()
+        return response.text
+
+    async def async_request(self, method, url, params=None, to_json=True):
+        if params:
+            async with self.async_client.request(method, url, data=params) as response:
+                if not response.ok:
+                    raise exceptions.BadStatusError(url, response.status_code)
+
+                if to_json:
+                    return json.loads(await response.text())
+                else:
+                    return await response.text()
+        else:
+            async with self.async_client.request(method, url) as response:
+                if not response.ok:
+                    raise exceptions.BadStatusError(url, response.status_code)
+
+                if to_json:
+                    return json.loads(await response.text())
+                else:
+                    return await response.text()
 
     def clear_mp_item_cache(self):
         self.mp_item_cache = {}
@@ -50,12 +96,11 @@ class Manager:
             name = effect + " " + name
         return name
 
-    @staticmethod
-    def s_get_inventory(user_id, game=440, parse: bool = True):
+    def s_get_inventory(self, user_id, game=440, parse: bool = True):
         from pytrade import EconItem
         url = "http://steamcommunity.com/inventory/" + str(user_id) + "/" + str(game) + "/2?l=english&count=5000"
 
-        response = requests.get(url).json()
+        response = self.request("GET", url)
 
         if not parse:
             return response
@@ -76,7 +121,7 @@ class Manager:
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices
 
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data = {"key": self.bp_api_key}
         if raw:
@@ -84,10 +129,10 @@ class Manager:
         if since:
             data["since"] = since
 
-        response = requests.get("https://backpack.tf/api/IGetPrices/v4", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/IGetPrices/v4", params=data)
 
         if not response["response"]["success"]:
-            raise Exception(response["response"]["message"])
+            raise exceptions.BadResponseError("https://backpack.tf/api/IGetPrices/v4", response["response"]["message"])
 
         return response
 
@@ -95,16 +140,17 @@ class Manager:
         # backpack.tf docs - https://backpack.tf/api/docs/IGetCurrencies
 
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data = {"key": self.bp_api_key}
         if raw:
             data["raw"] = raw
 
-        response = requests.get("https://backpack.tf/api/IGetCurrencies/v1", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/IGetCurrencies/v1", params=data)
 
         if not response["response"]["success"]:
-            raise Exception(response["response"]["message"])
+            raise exceptions.BadResponseError("https://backpack.tf/api/IGetCurrencies/v1",
+                                              response["response"]["message"])
 
         if not parse:
             return response
@@ -122,7 +168,7 @@ class Manager:
         to_return = {}
 
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         steamids_str = []
         for steamid in steamids:
@@ -139,10 +185,10 @@ class Manager:
         data = {"key": self.bp_api_key,
                 "steamids": ",".join(steamids_str)}
 
-        response = requests.get("https://backpack.tf/api/users/info/v1", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/users/info/v1", params=data).json()
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.BadResponseError("https://backpack.tf/api/users/info/v1", response["message"])
 
         if not parse:
             return response
@@ -273,7 +319,7 @@ class Manager:
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPriceHistory
 
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data = {"key": self.bp_api_key,
                 "item": item,
@@ -285,10 +331,11 @@ class Manager:
         if quality:
             data["quality"] = quality
 
-        response = requests.get("https://backpack.tf/api/IGetPriceHistory/v1", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/IGetPriceHistory/v1", params=data)
 
         if not response["response"]["success"]:
-            raise Exception(response["response"]["message"])
+            raise exceptions.BadResponseError("https://backpack.tf/api/IGetPriceHistory/v1",
+                                              response["response"]["message"])
 
         if not parse:
             return response
@@ -303,11 +350,11 @@ class Manager:
         # backpack.tf docs - https://backpack.tf/api/docs/classifieds_search
 
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data["key"] = self.bp_api_key
 
-        response = requests.get("https://backpack.tf/api/classifieds/search/v1", params=data).json()
+        response = self.request("GET", "https://backpack.tf/api/classifieds/search/v1", params=data)
 
         if "response" in response:
             raise Exception(response["response"])
@@ -420,19 +467,19 @@ class Manager:
 
     def bp_get_special_items(self, appid: int = 440):
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data = {"key": self.bp_api_key,
                 "appid": appid}
-        return requests.get("https://backpack.tf/api/IGetSpecialItems/v1", data=data).json()
+        return self.request("GET", "https://backpack.tf/api/IGetSpecialItems/v1", params=data)
 
     def bp_get_user_token(self):
         if not self.bp_api_key:
-            raise ValueError("bp_api_key not set")
+            raise exceptions.KeyNotSetError("bp_api_key")
 
         data = {"key": self.bp_api_key}
 
-        response = requests.get("https://backpack.tf/api/aux/token/v1", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/aux/token/v1", params=data)
 
         if "message" in response:
             raise Exception(response["message"])
@@ -441,12 +488,12 @@ class Manager:
 
     def bp_send_heartbeat(self, automatic: str = "all"):
         if not self.bp_user_token:
-            raise ValueError("bp_user_token not set")
+            raise exceptions.KeyNotSetError("bp_user_token")
 
         data = {"token": self.bp_user_token,
                 "automatic": automatic}
 
-        response = requests.post("https://backpack.tf/api/aux/heartbeat/v1", data=data).json()
+        response = self.request("POST", "https://backpack.tf/api/aux/heartbeat/v1", params=data)
 
         if "message" in response:
             raise Exception(response["message"])
@@ -455,7 +502,7 @@ class Manager:
 
     def bp_my_listings(self, item_names: bool = False, intent=None, inactive: int = 1, parse: bool = True):
         if not self.bp_user_token:
-            raise ValueError("bp_user_token not set")
+            raise exceptions.KeyNotSetError("bp_user_token")
 
         data = {"token": self.bp_user_token,
                 "inactive": inactive}
@@ -465,7 +512,7 @@ class Manager:
         if type(intent) == int:
             data["intent"] = intent
 
-        response = requests.get("https://backpack.tf/api/classifieds/listings/v1", data=data).json()
+        response = self.request("GET", "https://backpack.tf/api/classifieds/listings/v1", params=data)
 
         if "message" in response:
             raise Exception(response["message"])
@@ -484,12 +531,12 @@ class Manager:
 
     def bp_create_listing(self, listings: list, parse: bool = True):
         if not self.bp_user_token:
-            raise ValueError("bp_user_token not set")
+            raise exceptions.KeyNotSetError("bp_user_token")
 
         data = {"token": self.bp_user_token,
                 "listings": listings}
-
-        response = requests.post("https://backpack.tf/api/classifieds/list/v1", json=data).json()
+        
+        response = self.request("POST", "https://backpack.tf/api/classifieds/list/v1", params=data)
 
         if "message" in response:
             raise Exception(response["message"])
@@ -529,12 +576,12 @@ class Manager:
 
     def bp_delete_listings(self, listing_ids, parse: bool = True):
         if not self.bp_user_token:
-            raise ValueError("bp_user_token not set")
+            raise exceptions.KeyNotSetError("bp_user_token")
 
         data = {"token": self.bp_user_token,
                 "listing_ids": listing_ids}
-
-        response = requests.delete("https://backpack.tf/api/classifieds/delete/v1", json=data).json()
+        
+        response = self.request("DELETE", "https://backpack.tf/api/classifieds/delete/v1", params=data)
 
         if "message" in response:
             raise Exception(response["message"])
@@ -547,23 +594,21 @@ class Manager:
     def bp_delete_listing(self, listing_id, parse: bool = True):
         return self.bp_delete_listings([listing_id], parse)
 
-    @staticmethod
-    def bp_is_duped(itemid):
-        tree = html.fromstring(requests.get("https://backpack.tf/item" + str(itemid)).content)
+    def bp_is_duped(self, itemid):
+        response = self.request("GET", "https://backpack.tf/item" + str(itemid), to_json=False).encode()
+        tree = html.fromstring(response)
         return bool(tree.xpath("""//button[@id="dupe-modal-btn"]/text()"""))
 
-    @staticmethod
-    def bp_parse_inventory(user):
-        requests.get("https://backpack.tf/_inventory/" + str(user))
+    def bp_parse_inventory(self, user):
+        self.request("GET", "https://backpack.tf/_inventory/" + str(user), to_json=False)
 
-    @staticmethod
-    def bp_number_exist(quality: str, name: str, tradable: str="Tradable", craftable: str="Craftable",
+    def bp_number_exist(self, quality: str, name: str, tradable: str="Tradable", craftable: str="Craftable",
                         priceindex: int=0):
-        response = requests.get(
-            "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable, craftable, priceindex))
-        if not response.ok:
-            raise Exception("{} status code".format(response.status_code))
-        response = response.text
+
+        response = self.request("GET", "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable,
+                                                                                         craftable, priceindex),
+                                to_json=False)
+
         if "Stats for this item are not available." in response:
             return 0
         try:
@@ -582,17 +627,17 @@ class Manager:
 
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:
-            raise ValueError("mp_api_key not set")
+            raise exceptions.KeyNotSetError("mp_api_key")
 
         steamid = str(steamid)
 
         data = {"key": self.mp_api_key,
                 "steamid": steamid}
 
-        response = requests.get("https://marketplace.tf/api/Bans/GetUserBan/v1", data=data).json()
+        response = self.request("GET", "https://marketplace.tf/api/Bans/GetUserBan/v1", params=data)
 
         if not response["success"]:
-            raise Exception(response)
+            raise exceptions.BadResponseError("https://marketplace.tf/api/Bans/GetUserBan/v1", response)
 
         if not response["is_banned"]:
             return False, None
@@ -601,16 +646,16 @@ class Manager:
 
     def mp_deals(self, num: int = 100, skip: int = 0, parse: bool = True):
         if not self.mp_api_key:
-            raise ValueError("mp_api_key not set")
+            raise exceptions.KeyNotSetError("mp_api_key")
 
         data = {"key": self.mp_api_key,
                 "num": num,
                 "skip": skip}
 
-        response = requests.post("https://marketplace.tf/api/Deals/GetDeals/v2", data=data).json()
+        response = self.request("POST", "https://marketplace.tf/api/Deals/GetDeals/v2", params=data)
 
         if not response["success"]:
-            raise Exception(response)
+            raise exceptions.BadResponseError("https://marketplace.tf/api/Deals/GetDeals/v2", response)
 
         if not parse:
             return response
@@ -625,14 +670,14 @@ class Manager:
 
     def mp_dashboard_items(self, parse: bool = True):
         if not self.mp_api_key:
-            raise ValueError("mp_api_key not set")
+            raise exceptions.KeyNotSetError("mp_api_key")
 
         data = {"key": self.mp_api_key}
 
-        response = requests.get("https://marketplace.tf/api/Seller/GetDashboardItems/v2", data=data).json()
+        response = self.request("GET", "https://marketplace.tf/api/Seller/GetDashboardItems/v2", params=data)
 
         if not response["success"]:
-            raise Exception(response)
+            raise exceptions.BadResponseError("https://marketplace.tf/api/Seller/GetDashboardItems/v2", response)
 
         if not parse:
             return response
@@ -648,16 +693,16 @@ class Manager:
 
     def mp_sales(self, num: int = 100, start_before: int = time(), parse: bool = True):
         if not self.mp_api_key:
-            raise ValueError("mp_api_key not set")
+            raise exceptions.KeyNotSetError("mp_api_key")
 
         data = {"key": self.mp_api_key,
                 "num": num,
                 "start_before": start_before}
 
-        response = requests.get("https://marketplace.tf/api/Seller/GetSales/v2", data=data).json()
+        response = self.request("GET", "https://marketplace.tf/api/Seller/GetSales/v2", params=data)
 
         if not response["success"]:
-            raise Exception(response)
+            raise exceptions.BadResponseError("https://marketplace.tf/api/Seller/GetSales/v2", response)
 
         if not parse:
             return response
@@ -674,9 +719,9 @@ class Manager:
 
         chars1 = "\nn$ each" + chr(92)
         chars2 = "\nn, Availbe" + chr(92)
-
-        page = requests.get("https://marketplace.tf/items/" + sku + "/")
-        tree = html.fromstring(page.content)
+        
+        page = self.request("GET", "https://marketplace.tf/items/" + sku + "/", to_json=False)
+        tree = html.fromstring(page.encode())
         price = tree.xpath("""//div[@class="current-bid-amount"]/text()""")
         amount = tree.xpath("""//div[@class="current-bids"]/text()""")
         price = ''.join(price)
@@ -708,14 +753,14 @@ class Manager:
     def mp_item_amount(self, sku):
         return self.mp_item_info(sku)[1]
 
-    @staticmethod
-    def sr_reputation(steamid, parse: bool = True):
-        response = requests.get("http://steamrep.com/api/beta4/reputation/" + str(steamid), data={"json": 1,
-                                                                                                  "tagdetails": 1,
-                                                                                                  "extended": 1}).json()
+    def sr_reputation(self, steamid, parse: bool = True):
+        data = {"json": 1,
+                "tagdetails": 1,
+                "extended": 1}
+        
+        response = self.request("GET", "http://steamrep.com/api/beta4/reputation/" + str(steamid), params=data)
 
         if not parse:
             return response
-
         else:
             return sr_reputation.Reputation(response["steamrep"])
