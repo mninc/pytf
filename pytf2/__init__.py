@@ -5,11 +5,22 @@ from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_da
 from time import time
 from lxml import html
 import json
+import asyncio
 
 
 class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
                  async: bool = False, async_client: aiohttp.ClientSession = None):
+        if async:
+            if async_client:
+                self.async_client = async_client
+            else:
+                self.async_client = aiohttp.ClientSession()
+            self.request = self.async_request
+            self.loop = asyncio.get_event_loop()
+        else:
+            self.request = self.sync_request
+
         self.cache = cache
         self.bp_api_key = bp_api_key
         if bp_user_token:
@@ -19,15 +30,6 @@ class Manager:
         self.mp_api_key = mp_api_key
         self.mp_item_cache = {}
         self.bp_user_cache = {}
-
-        if async:
-            if async_client:
-                self.async_client = async_client
-            else:
-                self.async_client = aiohttp.ClientSession()
-            self.request = self.async_request
-        else:
-            self.request = self.sync_request
 
     @staticmethod
     def sync_request(method, url, params=None, to_json=True):
@@ -43,7 +45,7 @@ class Manager:
             return response.json()
         return response.text
 
-    async def async_request(self, method, url, params=None, to_json=True):
+    async def _async_request(self, method, url, params=None, to_json=True):
         if params:
             async with self.async_client.request(method, url, data=params) as response:
                 if not response.ok:
@@ -62,6 +64,9 @@ class Manager:
                     return json.loads(await response.text())
                 else:
                     return await response.text()
+
+    def async_request(self, method, url, params=None, to_json=True):
+        self.loop.run_until_complete(self._async_request(method, url, params=params, to_json=to_json))
 
     def clear_mp_item_cache(self):
         self.mp_item_cache = {}
