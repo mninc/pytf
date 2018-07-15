@@ -20,7 +20,7 @@ tf2_manager = pytf2.Manager(params)
 ## Asynchronous usage
 To use the library asynchronously, you need to do this:
 ```python
-await tf2_magaer = pytf2.async_manager.Manager.create(params)
+await tf2_manager = pytf2.async_manager.Manager.create(params)
 ```
 An additional parameter is available: 
 * **async_client** - an aiohttp.ClientSession object (default: `None`)
