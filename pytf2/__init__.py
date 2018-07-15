@@ -500,7 +500,6 @@ class Manager:
         data = {"key": self.bp_api_key}
 
         response = self.request("GET", "https://backpack.tf/api/aux/token/v1", params=data)
-        print(response)
 
         if "message" in response:
             raise Exception(response["message"])
