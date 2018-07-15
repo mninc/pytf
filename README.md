@@ -11,10 +11,21 @@ tf2_manager = pytf2.Manager(params)
 ```
 
 `__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='')`
-* cache - Keep results of APIs etc for use later without calling the API again. Useful for getting multiple bits of info from the same endpoint without receiving a cooldown
-* bp_api_key - [Your backpack.tf api key](https://backpack.tf/developer/apikey/view)
-* bp_user_token - [Your backpack.tf user token](https://backpack.tf/connections) (click 'Show Token')
-* mp_api_key - [Your marketplace.tf api key](https://marketplace.tf/apisettings)
+* **cache** - Keep results of APIs etc for use later without calling the API again. Useful for getting multiple bits of info from the same endpoint without receiving a cooldown
+* **bp_api_key** - [Your backpack.tf api key](https://backpack.tf/developer/apikey/view)
+* **bp_user_token** - [Your backpack.tf user token](https://backpack.tf/connections) (click 'Show Token')
+* **mp_api_key** - [Your marketplace.tf api key](https://marketplace.tf/apisettings)
+
+
+## Asynchronous usage
+To use the library asynchronously, you need to do this:
+```python
+await tf2_magaer = pytf2.async_manager.Manager.create(params)
+```
+An additional parameter is available: 
+* **async_client** - an aiohttp.ClientSession object (default: `None`)
+
+Every method can now be used with `await`.
 
 # Nicknames
 Some site names are shortened to keep function names at a reasonable length
