@@ -10,8 +10,8 @@ import asyncio
 
 class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
-                 async: bool = False, async_client: aiohttp.ClientSession = None):
-        if async:
+                 asynchronous: bool = False, async_client: aiohttp.ClientSession = None):
+        if asynchronous:
             if async_client:
                 self.async_client = async_client
             else:
