@@ -45,11 +45,27 @@ class Manager:
             return response.json()
         return response.text
 
+    @staticmethod
+    def _response_ok(status_code, url):
+        if status_code < 200 or status_code >= 300:
+            raise exceptions.BadStatusError(url, status_code)
+
+    def _check_params(self, params):
+        new_params = {}
+        for key, value in params.items():
+            if type(value) is dict:
+                value = self._check_params(value)
+            elif type(value) is bool:
+                value = int(value)
+            new_params[key] = value
+
+        return new_params
+
     async def _async_request(self, method, url, params=None, to_json=True):
+        params = self._check_params(params)  # aiohttp does not accept bools in parameters
         if params:
-            async with self.async_client.request(method, url, data=params) as response:
-                if not response.ok:
-                    raise exceptions.BadStatusError(url, response.status_code)
+            async with self.async_client.request(method, url, params=params) as response:
+                self._response_ok(response.status, url)
 
                 if to_json:
                     return json.loads(await response.text())
@@ -57,8 +73,7 @@ class Manager:
                     return await response.text()
         else:
             async with self.async_client.request(method, url) as response:
-                if not response.ok:
-                    raise exceptions.BadStatusError(url, response.status_code)
+                self._response_ok(response.status, url)
 
                 if to_json:
                     return json.loads(await response.text())
@@ -66,7 +81,7 @@ class Manager:
                     return await response.text()
 
     def async_request(self, method, url, params=None, to_json=True):
-        self.loop.run_until_complete(self._async_request(method, url, params=params, to_json=to_json))
+        return self.loop.run_until_complete(self._async_request(method, url, params=params, to_json=to_json))
 
     def clear_mp_item_cache(self):
         self.mp_item_cache = {}
@@ -485,6 +500,7 @@ class Manager:
         data = {"key": self.bp_api_key}
 
         response = self.request("GET", "https://backpack.tf/api/aux/token/v1", params=data)
+        print(response)
 
         if "message" in response:
             raise Exception(response["message"])
