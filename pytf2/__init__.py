@@ -155,7 +155,7 @@ class Manager:
         data = {"key": self.bp_api_key,
                 "steamids": ",".join(steamids_str)}
 
-        response = self.request("GET", "https://backpack.tf/api/users/info/v1", params=data).json()
+        response = self.request("GET", "https://backpack.tf/api/users/info/v1", params=data)
 
         if "message" in response:
             raise exceptions.BadResponseError("https://backpack.tf/api/users/info/v1", response["message"])
