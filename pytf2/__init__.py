@@ -20,9 +20,14 @@ class Manager:
         self.bp_user_cache = {}
 
     @staticmethod
-    def sync_request(method, url, params=None, to_json=True):
+    def sync_request(method, url, params=None, to_json=True, param_method=""):
         if params:
-            response = requests.request(method, url, data=params)
+            if param_method == "params":
+                response = requests.request(method, url, params=params)
+            elif param_method == "json":
+                response = requests.request(method, url, json=params)
+            else:
+                response = requests.request(method, url, data=params)
         else:
             response = requests.request(method, url)
 
@@ -324,7 +329,8 @@ class Manager:
 
         data["key"] = self.bp_api_key
 
-        response = self.request("GET", "https://backpack.tf/api/classifieds/search/v1", params=data)
+        response = self.request("GET", "https://backpack.tf/api/classifieds/search/v1", params=data,
+                                param_method="params")
 
         if "response" in response:
             raise Exception(response["response"])
@@ -506,7 +512,7 @@ class Manager:
         data = {"token": self.bp_user_token,
                 "listings": listings}
         
-        response = self.request("POST", "https://backpack.tf/api/classifieds/list/v1", params=data)
+        response = self.request("POST", "https://backpack.tf/api/classifieds/list/v1", params=data, param_method="json")
 
         if "message" in response:
             raise Exception(response["message"])
@@ -551,7 +557,8 @@ class Manager:
         data = {"token": self.bp_user_token,
                 "listing_ids": listing_ids}
         
-        response = self.request("DELETE", "https://backpack.tf/api/classifieds/delete/v1", params=data)
+        response = self.request("DELETE", "https://backpack.tf/api/classifieds/delete/v1", params=data,
+                                param_method="json")
 
         if "message" in response:
             raise Exception(response["message"])
