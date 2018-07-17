@@ -31,9 +31,9 @@ class Manager:
         return self
 
     @staticmethod
-    async def _response_ok(status_code, url):
+    async def _response_ok(status_code, url, response):
         if status_code < 200 or status_code >= 300:
-            raise exceptions.BadStatusError(url, status_code)
+            raise exceptions.BadStatusError(url, status_code, response)
 
     async def _check_params(self, params):
         new_params = {}
@@ -50,7 +50,7 @@ class Manager:
         params = await self._check_params(params)  # aiohttp does not accept bools in parameters
         if params:
             async with self.async_client.request(method, url, params=params) as response:
-                await self._response_ok(response.status, url)
+                await self._response_ok(response.status, url, await response.text())
                 response = await response.text()
 
                 if to_json:

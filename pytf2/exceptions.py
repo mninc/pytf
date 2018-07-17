@@ -3,11 +3,12 @@ class Error(Exception):
 
 
 class BadStatusError(Error):
-    def __init__(self, url, status):
+    def __init__(self, url, status, response):
         super().__init__("{} returned the bad status code {}".format(url, status))
 
         self.url = url
         self.status = status
+        self.response = response
 
 
 class BadResponseError(Error):

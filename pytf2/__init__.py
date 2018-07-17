@@ -27,7 +27,7 @@ class Manager:
             response = requests.request(method, url)
 
         if not response.ok:
-            raise exceptions.BadStatusError(url, response.status_code)
+            raise exceptions.BadStatusError(url, response.status_code, response.text)
 
         if to_json:
             return response.json()
