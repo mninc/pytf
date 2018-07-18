@@ -368,7 +368,8 @@ class Manager:
 
         to_return = {"sell": [],
                      "buy": [],
-                     "total": response["total"]}
+                     "total": response["total"],
+                     "skip": response["skip"]}
 
         if response["sell"]:
             to_return["sell_total"] = response["sell"]["total"]
