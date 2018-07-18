@@ -391,7 +391,8 @@ class Manager:
         return to_return
 
     @staticmethod
-    async def bp_classified_make_data(name, user=False, unusual: bool = False, set_elevated=False, page_size=10, fold=1):
+    async def bp_classified_make_data(name, user=False, unusual: bool = False, set_elevated=False, page_size=10, fold=1,
+                                      page=1):
         # Take off any unneccesary prefixes
         if name[:14] == "Non-Craftable ":
             name = name[14:]
@@ -450,7 +451,8 @@ class Manager:
                 "quality": str(quality),
                 "craftable": str(craftable),
                 "item": name,
-                "fold": fold}
+                "fold": fold,
+                "page": page}
 
         if effect:
             data["particle"] = effect
