@@ -49,7 +49,7 @@ class Manager:
     async def async_request(self, method, url, params=None, to_json=True):
         params = await self._check_params(params)  # aiohttp does not accept bools in parameters
         if params:
-            async with self.async_client.request(method, url, params=params) as response:
+            async with self.async_client.request(method, url, json=params) as response:
                 await self._response_ok(response.status, url, await response.text())
                 response = await response.text()
 
