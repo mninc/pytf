@@ -10,6 +10,10 @@ class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
                  bypass_cf: bool=False):
         self.request = self.sync_request
+        if bypass_cf:
+            self.requests = cfscrape.create_scraper()
+        else:
+            self.requests = requests
 
         self.cache = cache
         self.bp_api_key = bp_api_key
@@ -20,11 +24,6 @@ class Manager:
         self.mp_api_key = mp_api_key
         self.mp_item_cache = {}
         self.bp_user_cache = {}
-
-        if bypass_cf:
-            self.requests = cfscrape.create_scraper()
-        else:
-            self.requests = requests
 
     def sync_request(self, method, url, params=None, to_json=True, param_method=""):
         if params:
