@@ -10,11 +10,12 @@ import pytf2
 tf2_manager = pytf2.Manager(params)
 ```
 
-`__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='')`
+`__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='', bypass_cf: bool=False)`
 * **cache** - Keep results of APIs etc for use later without calling the API again. Useful for getting multiple bits of info from the same endpoint without receiving a cooldown
 * **bp_api_key** - [Your backpack.tf api key](https://backpack.tf/developer/apikey/view)
 * **bp_user_token** - [Your backpack.tf user token](https://backpack.tf/connections) (click 'Show Token')
 * **mp_api_key** - [Your marketplace.tf api key](https://marketplace.tf/apisettings)
+* **bypass_cf** - Uses the [cfscrape](https://pypi.org/project/cfscrape/) for every request so requests will still work when a site is in under attack mode. This option is currently only available synchronously. You should read the docs for this module before enabling this option - it might not work out of the box and will need updating on occasion.
 
 
 ## Asynchronous usage

@@ -3,10 +3,12 @@ from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_da
     sr_reputation, exceptions, async_manager
 from time import time
 from lxml import html
+import cfscrape
 
 
 class Manager:
-    def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = ''):
+    def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
+                 bypass_cf: bool=False):
         self.request = self.sync_request
 
         self.cache = cache
@@ -19,17 +21,21 @@ class Manager:
         self.mp_item_cache = {}
         self.bp_user_cache = {}
 
-    @staticmethod
-    def sync_request(method, url, params=None, to_json=True, param_method=""):
+        if bypass_cf:
+            self.requests = cfscrape.create_scraper()
+        else:
+            self.requests = requests
+
+    def sync_request(self, method, url, params=None, to_json=True, param_method=""):
         if params:
             if param_method == "params":
-                response = requests.request(method, url, params=params)
+                response = self.requests.request(method, url, params=params)
             elif param_method == "json":
-                response = requests.request(method, url, json=params)
+                response = self.requests.request(method, url, json=params)
             else:
-                response = requests.request(method, url, data=params)
+                response = self.requests.request(method, url, data=params)
         else:
-            response = requests.request(method, url)
+            response = self.requests.request(method, url)
 
         if not response.ok:
             raise exceptions.BadStatusError(url, response.status_code, response.text)
