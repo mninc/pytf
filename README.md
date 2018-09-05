@@ -1,9 +1,12 @@
+# pytf2
+An API wrapper for some TF2-related sites
+
 # Installation
 Run `pip install pytf2`.
 
 # Maker
-This module is made by me with help from any of the users listed [here](https://github.com/mninc/pytf/graphs/contributors).
-Feel free to hit me up on discord `manic#5170` or on my [steam profile](http://steamcommunity.com/id/manic_/).
+This project is made by [manic](http://manic.tf/).
+
 # Usage
 ```python
 import pytf2
