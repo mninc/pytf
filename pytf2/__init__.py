@@ -8,7 +8,9 @@ import cfscrape
 
 class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
-                 bypass_cf: bool=False):
+                 no_rate_limits: bool=False, bypass_cf: bool=False):
+        self.no_rate_limits = no_rate_limits
+        self._past_requests = []
         self.request = self.sync_request
         if bypass_cf:
             self.requests = cfscrape.create_scraper()
@@ -26,6 +28,12 @@ class Manager:
         self.bp_user_cache = {}
 
     def sync_request(self, method, url, params=None, to_json=True, param_method=""):
+        while len(self._past_requests) and time() - self._past_requests[0] > 60:
+            del self._past_requests[0]
+        if not self.no_rate_limits and len(self._past_requests) >= 120:
+            raise exceptions.RateLimited()
+        self._past_requests.append(time())
+        
         if params:
             if param_method == "params":
                 response = self.requests.request(method, url, params=params)

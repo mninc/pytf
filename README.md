@@ -10,18 +10,19 @@ import pytf2
 tf2_manager = pytf2.Manager(params)
 ```
 
-`__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='', bypass_cf: bool=False)`
+`__init__(self, cache: bool=True, bp_api_key: str='', bp_user_token: str='', mp_api_key: str='', no_rate_limits: bool=False, bypass_cf: bool=False)`
 * **cache** - Keep results of APIs etc for use later without calling the API again. Useful for getting multiple bits of info from the same endpoint without receiving a cooldown
 * **bp_api_key** - [Your backpack.tf api key](https://backpack.tf/developer/apikey/view)
 * **bp_user_token** - [Your backpack.tf user token](https://backpack.tf/connections) (click 'Show Token')
 * **mp_api_key** - [Your marketplace.tf api key](https://marketplace.tf/apisettings)
-* **bypass_cf** - Uses the [cfscrape](https://pypi.org/project/cfscrape/) for every request so requests will still work when a site is in under attack mode. This option is currently only available synchronously. You should read the docs for this module before enabling this option - it might not work out of the box and will need updating on occasion.
+* **no_rate_limits** - By default an error is raised if you try to make more than 120 requests per minute as this can cause your ip to be temporarily blocked by backpack.tf. If you want to disable this feature set this to True
+* **bypass_cf** - Uses the [cfscrape](https://pypi.org/project/cfscrape/) for every request so requests will still work when a site is in under attack mode. This option is currently only available synchronously. You should read the docs for this module before enabling this option - it might not work out of the box and will need updating on occasion
 
 
 ## Asynchronous usage
 To use the library asynchronously, you need to do this:
 ```python
-await tf2_manager = pytf2.async_manager.Manager.create(params)
+tf2_manager = await pytf2.async_manager.Manager.create(params)
 ```
 An additional parameter is available: 
 * **async_client** - an aiohttp.ClientSession object (default: `None`)

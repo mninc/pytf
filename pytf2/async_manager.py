@@ -9,8 +9,11 @@ import json
 class Manager:
     @classmethod
     async def create(cls, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
-                     async_client: aiohttp.ClientSession = None):
+                     no_rate_limits: bool=False, async_client: aiohttp.ClientSession = None):
         self = cls()
+
+        self.no_rate_limits = no_rate_limits
+        self._past_requests = []
 
         if async_client:
             self.async_client = async_client
@@ -47,6 +50,12 @@ class Manager:
         return new_params
 
     async def async_request(self, method, url, params=None, to_json=True):
+        while len(self._past_requests) and time() - self._past_requests[0] > 60:
+            del self._past_requests[0]
+        if not self.no_rate_limits and len(self._past_requests) >= 120:
+            raise exceptions.RateLimited()
+        self._past_requests.append(time())
+
         params = await self._check_params(params)  # aiohttp does not accept bools in parameters
         if params:
             async with self.async_client.request(method, url, json=params) as response:

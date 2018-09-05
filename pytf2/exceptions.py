@@ -23,3 +23,9 @@ class KeyNotSetError(Error):
         super().__init__("{} not set".format(var))
 
         self.var = var
+
+
+class RateLimited(Error):
+    def __init__(self):
+        super().__init__("You have made 120 requests in the past 60 seconds. This many requests could leave your ip"
+                         "liable to getting temporarily banned from backpack.tf. Read the docs to disable this error.")
