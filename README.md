@@ -1,11 +1,8 @@
 # pytf2
-An API wrapper for some TF2-related sites
+An API wrapper for some TF2-related sites. Created by [manic](http://manic.tf/).
 
 # Installation
 Run `pip install pytf2`.
-
-# Maker
-This project is made by [manic](http://manic.tf/).
 
 # Usage
 ```python
