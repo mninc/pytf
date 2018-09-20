@@ -97,6 +97,11 @@ Gets the inventory of a user
 
 Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if successful, otherwise raises and exception.
 
+## `bp_parse_prices(prices)`
+Parses a [backpack.tf community prices dict](https://backpack.tf/api/docs/IGetPrices).
+
+Returns a `bp_prices.Prices` object.
+
 ## `bp_get_currencies(self, raw: int=0, parse: bool=True)`
 [Gets the backpack.tf currency info](https://backpack.tf/api/docs/IGetCurrencies)
 

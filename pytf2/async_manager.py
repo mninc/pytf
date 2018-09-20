@@ -1,6 +1,6 @@
 import aiohttp
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
-    sr_reputation, exceptions
+    sr_reputation, exceptions, bp_prices
 from time import time
 from lxml import html
 import json
@@ -148,6 +148,10 @@ class Manager:
             raise exceptions.BadResponseError("https://backpack.tf/api/IGetPrices/v4", response["response"]["message"])
 
         return response
+
+    @staticmethod
+    async def bp_parse_prices(prices):  # possibility this takes too long to do synchronously
+        return bp_prices.Prices(prices)
 
     async def bp_get_currencies(self, raw: int = 0, parse: bool = True):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetCurrencies

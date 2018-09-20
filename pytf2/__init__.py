@@ -1,6 +1,6 @@
 import requests
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
-    sr_reputation, exceptions, async_manager
+    sr_reputation, exceptions, async_manager, bp_prices
 from time import time
 from lxml import html
 import cfscrape
@@ -123,6 +123,10 @@ class Manager:
             raise exceptions.BadResponseError("https://backpack.tf/api/IGetPrices/v4", response["response"]["message"])
 
         return response
+
+    @staticmethod
+    def bp_parse_prices(prices):
+        return bp_prices.Prices(prices)
 
     def bp_get_currencies(self, raw: int = 0, parse: bool = True):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetCurrencies
