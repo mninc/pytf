@@ -5,7 +5,7 @@
 
 ### Properties:
 
-* **listings** - an array of bp_classifieds.Classified objects
+* **listings** - an array of [Classified](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedsclassified-object) objects
 
 ### Methods:
 
@@ -23,14 +23,14 @@ Returns an array of listings from the specified steamid64.
 
 ## bp_classifieds.Classifieds object
 
-Inherits all properties and methods from a Listings object.
+Inherits all properties and methods from a [Listings](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedslistings-object) object.
 
 ### `__init__(self, data)`
 * **data** - a [classifieds search](https://backpack.tf/api/docs/classifieds_search) response.
 
 ## bp_classifieds.MyListings object
 
-Inherits all properties and methods from a Listings object. Some of the methods may not make sense for this data, but should still work as expected.
+Inherits all properties and methods from a [Listings](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedslistings-object) object. Some of the methods may not make sense for this data, but should still work as expected.
 
 ### `__init__(self, data)`
 * **data** - a [my listings](https://backpack.tf/api/docs/my_listings) response.
@@ -40,8 +40,8 @@ Inherits all properties and methods from a Listings object. Some of the methods 
 Contains all the properties of a listing from the backpack.tf api with the following changes:
 
 * `offers`, `buyout` and `automatic` are converted to bools
-* The `item` property is a ClassifiedsItem object
-* The `currencies` property is a ClassifiedsValue object
+* The `item` property is a [ClassifiedsItem](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedsclassifieditem-object) object
+* The `currencies` property is a [ClassifiedsValue](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedsclassifiedvalue-object) object
 
 ### `__init__(self, data)`
 * **data** - a listing from the backpack.tf api

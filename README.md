@@ -89,7 +89,7 @@ Gets the inventory of a user
 * **parse** - if False, returns raw data from steam. If True, returns an array of 
 [steam-trade/EconItem](https://github.com/Zwork101/steam-trade/blob/master/pytrade/EconItem.py) objects.
 
-## `bp_get_prices(self, raw: bool=0, since: int=0)`
+## `bp_get_prices(self, raw: bool=0, since: int=0, parse: bool=True)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)
 
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
@@ -206,10 +206,7 @@ All functions require the steamid64 of the player.
 [Searches backpack.tf classifieds](https://backpack.tf/api/docs/classifieds_search)
 
 * **data** - a dict of all the data to be sent to backpack.tf (as written [here](https://backpack.tf/api/docs/classifieds_search)). 'key' paramater is not required.
-* **parse** - if false, returns the dict from backpack.tf. If true, returns an array like this, including `bp_classified.py` objects:
-```
-{'sell': [<pytf2.bp_classified.Classified object>, ...], 'buy': [<pytf2.bp_classified.Classified object>, ...], 'total': 98, 'sell_total': 64, 'sell_fold': True, 'buy_total': 34, 'buy_fold': False}
-```
+* **parse** - if false, returns the dict from backpack.tf. If true, returns a [bp_classifieds.Classifieds object](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedsclassifieds-object)
 
 ## `bp_classified_make_data(name, user=False, unusual: bool=False, set_elevated=False, page_size=10, fold=1)`
 Creates data for use with the `bp_classifieds_search` method
@@ -249,10 +246,7 @@ Returns your listings from backpack.tf
 * **item_names** - if True, each listing item will have a 'name' property
 * **intent** - set to 0 for only buy listings and 1 for only sell listings
 * **inactive** - set to 0 to hide inactive listings
-* **parse** - if False, returns the response from backpack.tf. If True, returns:
-```
-{'cap': 127, 'promotes_remaining': 0, 'listings': [<pytf2.bp_classified.Classified object>, ...]}
-```
+* **parse** - if False, returns the response from backpack.tf. If True, returns a [bp_classifieds.MyListings](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedsmylistings-object) object.
 
 ## `bp_create_listing(self, listings: list, parse: bool=True)`
 Creates listings
