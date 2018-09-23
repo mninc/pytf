@@ -94,13 +94,7 @@ Gets the inventory of a user
 
 * **raw** - If set to 1, adds a value_raw to the priceindex objects which represents the value of the item in the lowest currency without rounding. If a high value is set, the raw value will be an average between the low and high value. Setting raw to 2 prevents this behaviour by adding a new field, value_high_raw.
 * **since** - If set, only returns prices that have a last_update value greater than or equal to this UNIX time.
-
-Returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices) if successful, otherwise raises and exception.
-
-## `bp_parse_prices(prices)`
-Parses a [backpack.tf community prices dict](https://backpack.tf/api/docs/IGetPrices).
-
-Returns a `bp_prices.Prices` object.
+* **parse** - If False, returns a dict [like the one here](https://backpack.tf/api/docs/IGetPrices). If True, returns a [bp_prices.Prices](https://github.com/mninc/pytf/blob/master/bp_prices.md#bp_pricesprices-object) object
 
 ## `bp_get_currencies(self, raw: int=0, parse: bool=True)`
 [Gets the backpack.tf currency info](https://backpack.tf/api/docs/IGetCurrencies)

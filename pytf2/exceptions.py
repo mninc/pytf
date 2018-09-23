@@ -29,3 +29,8 @@ class RateLimited(Error):
     def __init__(self):
         super().__init__("You have made 100 requests in the past 60 seconds. This many requests could leave your ip"
                          "liable to getting temporarily banned from backpack.tf. Read the docs to disable this error.")
+
+
+class ResponseMessage(Error):
+    def __init__(self, message):
+        super().__init__("backpack.tf returned the following message: {}".format(message))

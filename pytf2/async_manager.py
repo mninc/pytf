@@ -1,5 +1,5 @@
 import aiohttp
-from pytf2 import bp_currency, bp_user, bp_price_history, bp_classified, item_data, mp_deal, mp_item, mp_sale, \
+from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_data, mp_deal, mp_item, mp_sale, \
     sr_reputation, exceptions, bp_prices
 from time import time
 from lxml import html
@@ -374,35 +374,12 @@ class Manager:
         response = await self.request("GET", "https://backpack.tf/api/classifieds/search/v1", params=data)
 
         if "response" in response:
-            raise Exception(response["response"])
+            raise exceptions.ResponseMessage(response["response"])
 
         if not parse:
             return response
 
-        to_return = {"sell": [],
-                     "buy": [],
-                     "total": response["total"],
-                     "skip": response["skip"]}
-
-        if response["sell"]:
-            to_return["sell_total"] = response["sell"]["total"]
-            to_return["sell_fold"] = response["sell"]["fold"]
-            for listing in response["sell"]["listings"]:
-                to_return["sell"].append(bp_classified.Classified(listing, bool(data.get("item_names", False))))
-        else:
-            to_return["sell_total"] = 0
-            to_return["sell_fold"] = False
-
-        if response["buy"]:
-            to_return["buy_total"] = response["buy"]["total"]
-            to_return["buy_fold"] = response["buy"]["fold"]
-            for listing in response["buy"]["listings"]:
-                to_return["buy"].append(bp_classified.Classified(listing, bool(data.get("item_names", False))))
-        else:
-            to_return["buy_total"] = 0
-            to_return["buy_fold"] = False
-
-        return to_return
+        return bp_classifieds.Classifieds(response)
 
     @staticmethod
     async def bp_classified_make_data(name, user=False, unusual: bool = False, set_elevated=False, page_size=10, fold=1,
@@ -502,7 +479,7 @@ class Manager:
         response = await self.request("GET", "https://backpack.tf/api/aux/token/v1", params=data)
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.ResponseMessage(response["message"])
 
         return response["token"]
 
@@ -516,7 +493,7 @@ class Manager:
         response = await self.request("POST", "https://backpack.tf/api/aux/heartbeat/v1", params=data)
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.ResponseMessage(response["message"])
 
         return response["bumped"]
 
@@ -535,19 +512,12 @@ class Manager:
         response = await self.request("GET", "https://backpack.tf/api/classifieds/listings/v1", params=data)
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.ResponseMessage(response["message"])
 
         if not parse:
             return response
 
-        to_return = {"cap": response.get("cap", 0),
-                     "promotes_remaining": response.get("promotes_remaining", 0),
-                     "listings": []}
-
-        for listing in response["listings"]:
-            to_return["listings"].append(bp_classified.Classified(listing, item_names))
-
-        return to_return
+        return bp_classifieds.MyListings(response)
 
     async def bp_create_listing(self, listings: list, parse: bool = True):
         if not self.bp_user_token:
@@ -559,7 +529,7 @@ class Manager:
         response = await self.request("POST", "https://backpack.tf/api/classifieds/list/v1", params=data)
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.ResponseMessage(response["message"])
 
         if not parse:
             return response
@@ -604,7 +574,7 @@ class Manager:
         response = await self.request("DELETE", "https://backpack.tf/api/classifieds/delete/v1", params=data)
 
         if "message" in response:
-            raise Exception(response["message"])
+            raise exceptions.ResponseMessage(response["message"])
 
         if not parse:
             return response
