@@ -37,3 +37,10 @@ Additional properties:
 * effect_name - effect name if the item has an unusual effect, else None
 * name
 * url - a backpack.tf stats url for the item
+
+
+### Methods
+
+#### `in_date(self, days: int)`
+
+Input the number of days you qualify in date as and it will return True or False for if the suggestion is in date (eg if you put 3, was the suggestion in the past 3 days)

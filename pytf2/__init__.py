@@ -1,6 +1,6 @@
 import requests
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_data, mp_deal, mp_item, mp_sale, \
-    sr_reputation, exceptions, async_manager, bp_prices
+    sr_reputation, exceptions, async_manager, bp_prices, inventory
 from time import time
 from lxml import html
 import cfscrape
@@ -84,26 +84,16 @@ class Manager:
             name = effect + " " + name
         return name
 
-    def s_get_inventory(self, user_id, game=440, parse: bool = True):
-        from pytrade import EconItem
-        url = "http://steamcommunity.com/inventory/" + str(user_id) + "/" + str(game) + "/2?l=english&count=5000"
+    def s_get_inventory(self, user_id, game=440, context=2, language="english", count=5000, parse: bool = True):
+        url = "http://steamcommunity.com/inventory/{}/{}/{}?l={}&count={}".format(user_id, game, context,
+                                                                                  language, count)
 
         response = self.request("GET", url)
 
         if not parse:
             return response
 
-        to_return = []
-        classid_item = {}
-        for item in response["descriptions"]:
-            classid_item[item["classid"]] = item
-
-        for item in response["assets"]:
-            item.update(classid_item[item["classid"]])
-            item = EconItem.Item(item)
-            to_return.append(item)
-
-        return to_return
+        return inventory.Inventory(response)
 
     def bp_get_prices(self, raw: bool = 0, since: int = 0, parse: bool=True):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices

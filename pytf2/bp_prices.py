@@ -1,4 +1,5 @@
 from pytf2 import item_data
+from time import time
 
 
 class Item:
@@ -44,6 +45,17 @@ class Item:
         if not self.craftable:
             name = craftable + " " + name
         self.name = name
+
+    def in_date(self, days: int):
+        current_time = time()
+        suggestion_time = self.last_update
+        difference = current_time - suggestion_time
+        difference /= 60  # to minutes
+        difference /= 60  # to hours
+        difference /= 24  # to days
+        if difference > days:
+            return False
+        return True
 
 
 class Prices:

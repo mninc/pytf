@@ -1,6 +1,6 @@
 import aiohttp
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_data, mp_deal, mp_item, mp_sale, \
-    sr_reputation, exceptions, bp_prices
+    sr_reputation, exceptions, bp_prices, inventory
 from time import time
 from lxml import html
 import json
@@ -109,26 +109,16 @@ class Manager:
             name = effect + " " + name
         return name
 
-    async def s_get_inventory(self, user_id, game=440, parse: bool = True):
-        from pytrade import EconItem
-        url = "http://steamcommunity.com/inventory/" + str(user_id) + "/" + str(game) + "/2?l=english&count=5000"
+    async def s_get_inventory(self, user_id, game=440, context=2, language="english", count=5000, parse: bool = True):
+        url = "http://steamcommunity.com/inventory/{}/{}/{}?l={}&count={}".format(user_id, game, context,
+                                                                                  language, count)
 
         response = await self.request("GET", url)
 
         if not parse:
             return response
 
-        to_return = []
-        classid_item = {}
-        for item in response["descriptions"]:
-            classid_item[item["classid"]] = item
-
-        for item in response["assets"]:
-            item.update(classid_item[item["classid"]])
-            item = EconItem.Item(item)
-            to_return.append(item)
-
-        return to_return
+        return inventory.Inventory(response)
 
     async def bp_get_prices(self, raw: bool = 0, since: int = 0):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices
@@ -332,7 +322,7 @@ class Manager:
         return user.trust.negative
 
     async def bp_get_price_history(self, item, quality=None, tradable=1, craftable=1, priceindex: int = 0, appid: int = 440,
-                             parse: bool = True):
+                                   parse: bool = True):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPriceHistory
 
         if not self.bp_api_key:
@@ -549,7 +539,7 @@ class Manager:
 
     @staticmethod
     async def bp_create_listing_create_data(intent: int, currencies: dict, item_or_id, offers: int = 1, buyout: int = 1,
-                                      promoted: int = 0, details: str = ""):
+                                            promoted: int = 0, details: str = ""):
         data = {"intent": intent,
                 "currencies": currencies,
                 "offers": offers,
@@ -593,11 +583,11 @@ class Manager:
         await self.request("GET", "https://backpack.tf/_inventory/" + str(user), to_json=False)
 
     async def bp_number_exist(self, quality: str, name: str, tradable: str = "Tradable", craftable: str = "Craftable",
-                        priceindex: int = 0):
+                              priceindex: int = 0):
 
         response = await self.request("GET", "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(quality, name, tradable,
-                                                                                         craftable, priceindex),
-                                to_json=False)
+                                                                                               craftable, priceindex),
+                                      to_json=False)
 
         if "Stats for this item are not available." in response:
             return 0
