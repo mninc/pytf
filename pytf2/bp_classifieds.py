@@ -76,12 +76,14 @@ class Listings:
         for listing in data:
             self.listings.append(Classified(listing))
 
-    def get_highest_buyer(self):
+    def get_highest_buyer(self, exclude: list=""):
         # highest ref and highest keys
         highest_k = 0
         highest_r = 0
         highest = None
         for listing in self.listings:
+            if listing.steamid in exlude:
+                continue
             if listing.intent == 0:
                 if listing.currencies.keys > highest_k:
                     highest_k = listing.currencies.keys
@@ -93,12 +95,14 @@ class Listings:
                     highest = listing
         return highest
 
-    def get_lowest_seller(self):
+    def get_lowest_seller(self, exlude: list=""):
         # lowest ref and lowest keys
         lowest_k = 5000
-        lowest_r = 100
+        lowest_r = 5000
         lowest = None
         for listing in self.listings:
+            if listing.steamid in exlude:
+                continue
             if listing.intent == 1:
                 if listing.currencies.keys < lowest_k:
                     lowest_k = listing.currencies.keys
