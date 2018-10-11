@@ -542,8 +542,38 @@ class Manager:
         return to_return
 
     @staticmethod
-    async def bp_create_listing_create_data(intent: int, currencies: dict, item_or_id, offers: int = 1, buyout: int = 1,
-                                            promoted: int = 0, details: str = ""):
+    async def name_to_item(name):
+        quality = "Unique"
+        if not name.startswith("Haunted Phantasm") and name != "Strange Bacon Grease" and \
+                not name.startswith("Strange Filter") and not name.startswith("Strange Count") and \
+                not name.startswith("Strange Cosmetic") and name != "Vintage Tyrolean" and \
+                name != "Vintage Merryweather" and name != "Haunted Hat" and name != "Haunted Metal Scrap" and \
+                not name.startswith("Haunted Ghosts"):
+            for _quality in item_data.qualities:
+                if name.startswith(_quality + " "):
+                    quality = _quality
+                    name = name[len(_quality) + 1:]
+
+        priceindex = 0
+        if "Hot Heels" not in name:
+            for _effect in item_data.effects:
+                if name.startswith(_effect):
+                    name = name[len(_effect) + 1:]
+                    priceindex = item_data.effects[_effect]
+                    if quality == "Strange":
+                        quality = "Strange Unusual"
+                    else:
+                        quality = "Unusual"
+
+        craftable = 1
+        if name.startswith("Non-Craftable"):
+            craftable = 0
+            name = name[14:]
+
+        return {"quality": quality, "item_name": name, "craftable": craftable, "priceindex": priceindex}
+
+    async def bp_create_listing_create_data(self, intent: int, currencies: dict, item_or_id, offers: int = 1,
+                                            buyout: int = 1, promoted: int = 0, details: str = ""):
         data = {"intent": intent,
                 "currencies": currencies,
                 "offers": offers,
@@ -554,7 +584,10 @@ class Manager:
         if intent:
             data["id"] = item_or_id
         else:
-            data["item"] = item_or_id
+            if type(item_or_id) is dict:
+                data["item"] = item_or_id
+            else:
+                data["item"] = self.name_to_item(item_or_id)
 
         return data
 

@@ -72,9 +72,7 @@ class Classified:
 
 class Listings:
     def __init__(self, data):
-        self.listings = []
-        for listing in data:
-            self.listings.append(Classified(listing))
+        self.listings = [Classified(listing) for listing in data]
 
     def get_highest_buyer(self, exclude: list="", automatic_only: bool=False):
         # highest ref and highest keys

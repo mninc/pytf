@@ -271,7 +271,7 @@ Creates a listing dict for use in the `bp_create_listing` method as part of a li
 {"metal": 10, "keys": 11}
 ```
 * **item_or_id** - if the intent is sell, this is the current id of the item. Can also be the id of an item in you marketplace.tf inventory if you have integration set up.
-If the intent is to buy, this is a dict object:
+If the intent is to buy, this is either the name of the item or a dict object:
 ```json
 {"quality": "quality name or id. Supports elevated qualities, just use a space (eg 'Strange Unusual')", 
  "item_name": "name of the item or it's defindex. supports killstreaks and australium (prefix the name with it)",
