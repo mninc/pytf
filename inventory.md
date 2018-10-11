@@ -35,5 +35,3 @@ Get an array of assetids for the item `item_name`.
 
 * Add quality, effect properties etc
 * Add methods (such as create_item_dict to make a dictionary that can be used to make a buy order on backpack.tf)
-
-[s](#inventoryinventory-object)
