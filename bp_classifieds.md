@@ -9,16 +9,21 @@
 
 ### Methods:
 
-#### `get_highest_buyer(self, exclude: list="")`
+#### `get_highest_buyer(self, exclude: list="", automatic_only: bool=False)`
 
 Returns the highest buy order, or `None` if there are none.
+
 The exclude parameter should be an array of steamids to ignore (you probably want to exclude yourself when fetching the highest buyer)
 
-#### `get_lowest_seller(self, exclude: list="")`
+The automatic_only should be set to true if you do not want non-automatic buyers.
+
+#### `get_lowest_seller(self, exclude: list="", automatic_only: bool=False)`
 
 Returns the lowest sell order, or `None` if there are none.
+
 The exclude parameter should be an array of steamids to ignore (you probably want to exclude yourself when fetching the lowest seller)
 
+The automatic_only should be set to true if you do not want non-automatic sellers.
 
 #### `get_listings_by_steamid(self, steamid)`
 
