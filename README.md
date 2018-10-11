@@ -1,6 +1,8 @@
 # pytf2
 An API wrapper for some TF2-related sites. Created by [manic](http://manic.tf/).
 
+These methods are designed so I can use this module rather than pasting functions into many blocks of code. It is not intended to be an API wrapper for every tf2 site. If you want to add some methods, feel free to make a pull request.
+
 # Installation
 Run `pip install pytf2`.
 
@@ -81,13 +83,16 @@ Changes a steam-trade EconItem object to a string. Please note - this method may
 
 Returns the name of the item
 
-##  `s_get_inventory(user_id, game=440, parse: bool=True)`
+##  `s_get_inventory(self, user_id, game=440, context=2, language="english", count=5000, start_assetid=None, parse: bool = True)`
 Gets the inventory of a user
 
 * **user_id** - the steamid64 of the user
 * **game** - the id of the game to get inventory for (440 - TF2)
-* **parse** - if False, returns raw data from steam. If True, returns an array of 
-[steam-trade/EconItem](https://github.com/Zwork101/steam-trade/blob/master/pytrade/EconItem.py) objects.
+* **context** - the inventory context. For TF2 this is always 2. 
+* **language** - the language to fetch the inventory in. If you choose something other than english parsing may break
+* **count** - maximum number of items to fetch. Maximum 5000
+* **start_assetid** - used for pagination. First item to fetch in the inventory. Currently unnecessary for TF2 as the maximum inventory size is less than 5000
+* **parse** - if False, returns raw data from steam. If True, returns a [inventory.Inventory](https://github.com/mninc/pytf/blob/master/inventory.md#inventoryinventory-object) object.
 
 ## `bp_get_prices(self, raw: bool=0, since: int=0, parse: bool=True)`
 [Gets the backpack.tf suggested price info](https://backpack.tf/api/docs/IGetPrices)

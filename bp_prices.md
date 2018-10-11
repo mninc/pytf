@@ -13,6 +13,8 @@ Fetch a `bp_prices.Item` object from `self.items`. If the exact name is not foun
 ### todo
 
 * Add more methods to this object (maybe get items with a certain quality, items with a certain effect etc)
+
+
 ## bp_prices.Item
 
 ### Properties:

@@ -109,9 +109,13 @@ class Manager:
             name = effect + " " + name
         return name
 
-    async def s_get_inventory(self, user_id, game=440, context=2, language="english", count=5000, parse: bool = True):
+    async def s_get_inventory(self, user_id, game=440, context=2, language="english", count=5000, start_assetid=None,
+                              parse: bool = True):
         url = "http://steamcommunity.com/inventory/{}/{}/{}?l={}&count={}".format(user_id, game, context,
                                                                                   language, count)
+        if start_assetid:
+            url += "&start_assetid="
+            url += str(start_assetid)
 
         response = await self.request("GET", url)
 
