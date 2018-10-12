@@ -50,11 +50,12 @@ class Manager:
         return new_params
 
     async def async_request(self, method, url, params=None, to_json=True):
-        while len(self._past_requests) and time() - self._past_requests[0] > 60:
-            del self._past_requests[0]
-        if not self.no_rate_limits and len(self._past_requests) >= 100:
-            raise exceptions.RateLimited()
-        self._past_requests.append(time())
+        if "backpack.tf" in url:
+            while len(self._past_requests) and time() - self._past_requests[0] > 60:
+                del self._past_requests[0]
+            if not self.no_rate_limits and len(self._past_requests) >= 100:
+                raise exceptions.RateLimited()
+            self._past_requests.append(time())
 
         params = await self._check_params(params)  # aiohttp does not accept bools in parameters
         if params:

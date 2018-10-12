@@ -28,11 +28,12 @@ class Manager:
         self.bp_user_cache = {}
 
     def sync_request(self, method, url, params=None, to_json=True, param_method=""):
-        while len(self._past_requests) and time() - self._past_requests[0] > 60:
-            del self._past_requests[0]
-        if not self.no_rate_limits and len(self._past_requests) >= 100:
-            raise exceptions.RateLimited()
-        self._past_requests.append(time())
+        if "backpack.tf" in url:
+            while len(self._past_requests) and time() - self._past_requests[0] > 60:
+                del self._past_requests[0]
+            if not self.no_rate_limits and len(self._past_requests) >= 100:
+                raise exceptions.RateLimited()
+            self._past_requests.append(time())
         
         if params:
             if param_method == "params":
