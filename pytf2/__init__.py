@@ -567,7 +567,7 @@ class Manager:
 
         return data
 
-    def bp_delete_listings(self, listing_ids, parse: bool = True):
+    def bp_delete_listings(self, listing_ids: list, parse: bool=True):
         if not self.bp_user_token:
             raise exceptions.KeyNotSetError("bp_user_token")
 
@@ -585,8 +585,8 @@ class Manager:
 
         return response["deleted"], response["errors"]
 
-    def bp_delete_listing(self, listing_id, parse: bool = True):
-        return self.bp_delete_listings([listing_id], parse)
+    def bp_delete_listing(self, listing_id, parse: bool=True):
+        return self.bp_delete_listings([listing_id], parse=parse)
 
     def bp_is_duped(self, itemid):
         response = self.request("GET", "https://backpack.tf/item" + str(itemid), to_json=False).encode()

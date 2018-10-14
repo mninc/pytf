@@ -126,6 +126,24 @@ class Listings:
                 to_return.append(listing)
         return to_return
 
+    def __add__(self, other):
+        if other == 0:
+            return self
+        elif type(self) is MyListings and type(other) is MyListings:
+            self.listings += other.listings
+            return self
+        elif type(self) is Classifieds and type(other) is Classifieds:
+            self.total += other.total
+            self.skip = None
+            self.page_size += other.page_size
+            self.sell_total += other.sell_total
+            self.buy_total += other.buy_total
+            self.listings += other.listings
+            return self
+        else:
+            raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(self.__class__.__name__,
+                                                                                      other.__class__.__name__))
+
 
 class Classifieds(Listings):
     def __init__(self, data):
