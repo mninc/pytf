@@ -76,6 +76,30 @@ Takes no arguments
 
 Returns nothing
 
+## `pp_currency(keys, metal, key_name: str="key", metal_name: str="ref")`
+Pretty print a currency.
+
+* **keys**
+* **metal**
+* **key_name** - what to call keys (eg '1 key' or '1 Mann Co. Supply Crate Key')
+* **metal_name** - what to call metal
+
+Returns a string (eg '12 ref' '1 key' or '2 keys 0.22 ref')
+
+## `pp_currency_dict(self, currency, **kwargs):`
+Use a currency dictionary for [pp_currency](#pp_currencykeys-metal-key_name-strkey-metal_name-strref).
+
+* **currency** - a dictionary containing the price information. 
+```json
+{"keys": 2, "metal": 6}
+```
+or
+```json
+{"keys": 2, "ref": 0}
+```
+
+* Takes the same kwargs as [pp currency](#pp_currencykeys-metal-key_name-strkey-metal_name-strref)
+
 ## `st_item_to_str(item)`
 Changes a steam-trade EconItem object to a string. Please note - this method may not work for all items. Use with care
 

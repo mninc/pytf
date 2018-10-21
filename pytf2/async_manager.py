@@ -84,6 +84,26 @@ class Manager:
         self.bp_user_cache = {}
 
     @staticmethod
+    async def pp_currency(keys, metal, key_name: str = "key", metal_name: str = "ref"):
+        if not keys and not metal:
+            return ""
+        elif not keys:
+            return "{} {}".format(metal, metal_name)
+        elif keys == 1 and not metal:
+            return "1 {}".format(key_name)
+        elif keys == 1 and metal:
+            return "1 {} {} {}".format(key_name, metal, metal_name)
+        elif keys and not metal:
+            return "{} {}s".format(keys, key_name)
+        else:
+            return "{} {}s {} {}".format(keys, key_name, metal, metal_name)
+
+    async def pp_currency_dict(self, currency, **kwargs):
+        keys = currency["keys"]
+        metal = currency["metal"] if "metal" in currency else currency["ref"]
+        return await self.pp_currency(keys, metal, **kwargs)
+
+    @staticmethod
     async def st_item_to_str(item):
         name = item.market_name
         # Assume it's craftable
