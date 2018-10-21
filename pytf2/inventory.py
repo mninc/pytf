@@ -58,6 +58,11 @@ class InventoryItem:
 
 class Inventory:
     def __init__(self, data):
+        self.total_inventory_count = data["total_inventory_count"]
+        self.success = data["success"]
+        self.rwgrsn = data["rwgrsn"]
+        self.data = data
+
         classid_item = {}
         for item in data["descriptions"]:
             classid_item[item["classid"]] = item
