@@ -36,8 +36,8 @@ class InventoryItem:
         unusual = False
         if name.startswith("Unusual "):
             unusual = True
-        if item.get("descriptions"):
-            for line in item["descriptions"]:
+        if descriptions.get("descriptions"):
+            for line in descriptions["descriptions"]:
                 if line["value"] == "( Not Usable in Crafting )":
                     craftable = False
                 elif line["value"].startswith("★ Unusual Effect: ") and unusual:
