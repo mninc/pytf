@@ -65,14 +65,12 @@ class Inventory:
         self.rwgrsn = data["rwgrsn"]
         self.data = data
 
-        classid_item = {}
-        for item in data["descriptions"]:
-            classid_item[item["classid"]] = item
-
         self.items = []
         for item in data["assets"]:
-            if item["classid"] in classid_item:
-                self.items.append(InventoryItem(item, classid_item[item["classid"]]))
+            for info in data["descriptions"]:
+                if info["classid"] == item["classid"] and info["instanceid"] == item["instanceid"]:
+                    self.items.append(InventoryItem(item, info))
+                    break
 
     def get_items(self, item_name):
         items = []
