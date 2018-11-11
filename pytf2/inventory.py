@@ -30,6 +30,10 @@ class InventoryItem:
 
         # Get backpack.tf name
         name = self.market_name
+
+        if name.startswith("The "):
+            name = name[4:]
+
         # assumptions
         craftable = True
         effect = ""
@@ -51,8 +55,6 @@ class InventoryItem:
         elif effect:
             name = effect + " " + name
 
-        if name.startswith("The "):
-            name = name[4:]
         self.bp_name = name
 
 
