@@ -551,9 +551,10 @@ class Manager:
                     name = name[len(_quality) + 1:]
 
         priceindex = 0
-        if "Hot Heels" not in name:
+        if "Hot Heels" not in name and "Hot Case" not in name and "Hot Hand" not in name:
             for _effect in item_data.effects:
-                if name.startswith(_effect):
+                if name.startswith(_effect) and (_effect != "Hot" and ("Hottie's Hoodie" in name or "Hotrod" in name or
+                                                                       "Hot Dogger" in name)):
                     name = name[len(_effect) + 1:]
                     priceindex = item_data.effects[_effect]
                     if quality == "Strange":
