@@ -356,6 +356,11 @@ Checks how many of that item exist
 
 Returns the number of items that exist, 0 if none.
 
+## `bp_get_open_suggestions(self, **params)`
+Loads open suggestions from backpack.tf/vote using parameters usable there.
+
+Returns a bp_prices.OpenPrices object.
+
 ## `mp_user_is_banned(self, steamid)`
 Checks if the user is banned on marketplace.tf
 

@@ -1,14 +1,14 @@
 import requests
 from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_data, mp_deal, mp_item, mp_sale, \
     sr_reputation, exceptions, async_manager, bp_prices, inventory
-from time import time
+from time import time, sleep
 from lxml import html
 import cfscrape
 
 
 class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
-                 no_rate_limits: bool=False, bypass_cf: bool=False):
+                 no_rate_limits: bool = False, bypass_cf: bool = False):
         self.no_rate_limits = no_rate_limits
         self._past_requests = []
         self.request = self.sync_request
@@ -48,6 +48,7 @@ class Manager:
         if not response.ok:
             raise exceptions.BadStatusError(url, response.status_code, response.text)
         
+        response.encoding = "utf-8"
         if to_json:
             return response.json()
         return response.text
@@ -606,7 +607,7 @@ class Manager:
         
         return response["deleted"], response["errors"]
     
-    def bp_delete_listing(self, listing_id, parse: bool=True):
+    def bp_delete_listing(self, listing_id, parse: bool = True):
         return self.bp_delete_listings([listing_id], parse=parse)
     
     def bp_is_duped(self, itemid):
@@ -639,6 +640,17 @@ class Manager:
             end = response.index(last, start)
             if response[start:end] == "only one":
                 return 1
+    
+    def bp_get_open_suggestions(self, **params):
+        page = 1
+        prices = bp_prices.OpenPrices(self.name_to_item)
+        while True:
+            sleep(1)
+            response = self.request("GET", "https://backpack.tf/vote", params={"page": page, **params},
+                                    to_json=False, param_method="params")
+            if prices._add_items(response):
+                return prices
+            page += 1
     
     def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:

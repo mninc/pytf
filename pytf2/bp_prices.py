@@ -1,5 +1,6 @@
 from pytf2 import item_data
 from time import time
+from AdvancedHTMLParser import AdvancedHTMLParser
 
 
 class Item:
@@ -86,9 +87,72 @@ class Prices:
     def get_item(self, name):
         if name in self.items:
             return self.items[name]
-
         for item in self.items:
             if name in item:
                 return self.items[item]
-
         return
+
+
+class OpenSuggestion:
+    def __init__(self, name, currency, price, item):
+        self.name = name
+        self.currency = currency
+        self.price = price
+        self.quality = item["quality"]
+        self.item_name = item["item_name"]
+        self.craftable = item["craftable"]
+        self.priceindex = item["priceindex"]
+        
+        self.url = "https://backpack.tf/stats/{}/{}/{}/{}/{}".format(
+            self.quality, self.item_name, "Tradable", "Craftable" if self.craftable else "Non-Craftable",
+            self.priceindex
+        )
+
+
+class OpenPrices:
+    def __init__(self, name_to_item):
+        self.name_to_item = name_to_item
+        self.items = []
+        
+    def _add_items(self, data):
+        parser = AdvancedHTMLParser()
+        parser.parseStr(data)
+        suggs = parser.getElementsByClassName("suggestion")
+        end = len(suggs) != 10
+        for sugg in suggs:
+            name = sugg.getElementsByClassName("item-name")[0].innerText.strip()
+            new_price = sugg.getElementsByClassName("price-new")
+            if not len(new_price):
+                new_price = sugg.getElementsByClassName("price-refresh")
+            new_price = new_price[0].innerText.strip()
+            if "key" in new_price:
+                currency = "keys"
+                multiple = "keys" in new_price
+                i = len(new_price) - 4
+                if multiple:
+                    i -= 1
+                
+                new_price = new_price[:i]
+                if "–" in new_price:  # bear in mind - not a normal dash
+                    values = new_price.split("–")
+                    price = (float(values[0]) + float(values[1])) / 2
+                else:
+                    price = float(new_price)
+            else:
+                currency = "ref"
+                new_price = new_price[:len(new_price)-4]
+                if "–" in new_price:
+                    values = new_price.split("–")
+                    price = (float(values[0]) + float(values[1])) / 2
+                else:
+                    price = float(new_price)
+            self.items.append(OpenSuggestion(name, currency, price, self.name_to_item(name)))
+        return end
+    
+    def get_item(self, name):
+        for item in self.items:
+            if item.name == name:
+                return item
+        for item in self.items:
+            if name in item.name:
+                return item

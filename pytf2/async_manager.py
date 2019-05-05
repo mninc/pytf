@@ -4,6 +4,7 @@ from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_d
 from time import time
 from lxml import html
 import json
+from asyncio import sleep
 
 
 class Manager:
@@ -663,6 +664,17 @@ class Manager:
             end = response.index(last, start)
             if response[start:end] == "only one":
                 return 1
+    
+    async def bp_get_open_suggestions(self, **params):
+        page = 1
+        prices = bp_prices.OpenPrices(self.name_to_item)
+        while True:
+            await sleep(1)
+            response = await self.request("GET", "https://backpack.tf/vote", params={"page": page, **params},
+                                          to_json=False, param_method="params")
+            if prices._add_items(response):
+                return prices
+            page += 1
     
     async def mp_user_is_banned(self, steamid):
         if not self.mp_api_key:
