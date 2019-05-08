@@ -27,7 +27,7 @@ class Manager:
         self.mp_item_cache = {}
         self.bp_user_cache = {}
     
-    def sync_request(self, method, url, params=None, to_json=True, param_method=""):
+    def sync_request(self, method, url, params=None, to_json=True, param_method="", change_encoding=False):
         if "backpack.tf" in url:
             while len(self._past_requests) and time() - self._past_requests[0] > 60:
                 del self._past_requests[0]
@@ -48,7 +48,8 @@ class Manager:
         if not response.ok:
             raise exceptions.BadStatusError(url, response.status_code, response.text)
         
-        response.encoding = "utf-8"
+        if change_encoding:
+            response.encoding = "utf-8"
         if to_json:
             return response.json()
         return response.text
@@ -647,7 +648,7 @@ class Manager:
         while True:
             sleep(1)
             response = self.request("GET", "https://backpack.tf/vote", params={"page": page, **params},
-                                    to_json=False, param_method="params")
+                                    to_json=False, param_method="params", change_encoding=True)
             if prices._add_items(response):
                 return prices
             page += 1
