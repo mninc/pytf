@@ -125,6 +125,9 @@ class Listings:
             if listing.steamid == steamid:
                 to_return.append(listing)
         return to_return
+    
+    def filter(self, filter_func):
+        self.listings = filter(filter_func, self.listings)
 
     def __add__(self, other):
         if other == 0:
