@@ -146,7 +146,7 @@ class Manager:
         
         return inventory.Inventory(response)
     
-    async def bp_get_prices(self, raw: bool = 0, since: int = 0):
+    async def bp_get_prices(self, raw: bool = 0, since: int = 0, parse: bool = True):
         # backpack.tf docs - https://backpack.tf/api/docs/IGetPrices
         
         if not self.bp_api_key:
@@ -163,7 +163,10 @@ class Manager:
         if not response["response"]["success"]:
             raise exceptions.BadResponseError("https://backpack.tf/api/IGetPrices/v4", response["response"]["message"])
         
-        return response
+        if not parse:
+            return response
+        
+        return bp_prices.Prices(response)
     
     @staticmethod
     async def bp_parse_prices(prices):  # possibility this takes too long to do synchronously
