@@ -29,6 +29,10 @@ The automatic_only should be set to true if you do not want non-automatic seller
 
 Returns an array of listings from the specified steamid64.
 
+### `get_listings_by_intent(self, intent: int)`
+
+Returns an array of listings with the specified intent (1: sell, 0: buy).
+
 ## bp_classifieds.Classifieds object
 
 Inherits all properties and methods from a [Listings](https://github.com/mninc/pytf/blob/master/bp_classifieds.md#bp_classifiedslistings-object) object.

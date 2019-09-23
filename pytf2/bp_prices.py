@@ -10,6 +10,7 @@ class Item:
             return
         else:
             self.invalid = False
+        self.base_name = name
         self.mean_value = (data["value"] + data.get("value_high", data["value"])) / 2
         self.value = data["value"]
         self.value_high = data.get("value_high")

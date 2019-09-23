@@ -126,6 +126,13 @@ class Listings:
                 to_return.append(listing)
         return to_return
     
+    def get_listings_by_intent(self, intent: int):
+        to_return = []
+        for listing in self.listings:
+            if listing.intent == intent:
+                to_return.append(listing)
+        return to_return
+    
     def filter(self, filter_func):
         self.listings = filter(filter_func, self.listings)
 
