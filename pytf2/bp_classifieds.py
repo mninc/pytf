@@ -134,7 +134,7 @@ class Listings:
         return to_return
     
     def filter(self, filter_func):
-        self.listings = filter(filter_func, self.listings)
+        self.listings = list(filter(filter_func, self.listings))
 
     def __add__(self, other):
         if other == 0:
