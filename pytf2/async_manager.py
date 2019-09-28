@@ -240,35 +240,43 @@ class Manager:
     
     async def bp_user_name(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].name
+        user = await self.bp_user_info([steamid])
+        return user[steamid].name
     
     async def bp_avatar(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].avatar
+        user = await self.bp_user_info([steamid])
+        return user[steamid].avatar
     
     async def bp_last_online(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].last_online
+        user = await self.bp_user_info([steamid])
+        return user[steamid].last_online
     
     async def bp_admin(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].admin
+        await self.bp_user_info([steamid])
+        return user[steamid].admin
     
     async def bp_donated(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].donated
+        user = await self.bp_user_info([steamid])
+        return user[steamid].donated
     
     async def bp_premium(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].premium
+        user = await self.bp_user_info([steamid])
+        return user[steamid].premium
     
     async def bp_premium_months_gifted(self, steamid):
         steamid = str(steamid)
-        return await self.bp_user_info([steamid])[steamid].premium_months_gifted
+        user = await self.bp_user_info([steamid])
+        return user[steamid].premium_months_gifted
     
     async def bp_can_trade(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.bans:
             return True
         if user.bans.steamrep_scammer or user.bans.bp_bans["all"]:
@@ -277,14 +285,16 @@ class Manager:
     
     async def bp_voting_rep(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.voting:
             return
         return user.voting.reputation
     
     async def bp_backpack_rank(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -293,7 +303,8 @@ class Manager:
     
     async def bp_backpack_value(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -302,7 +313,8 @@ class Manager:
     
     async def bp_backpack_metal(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -311,7 +323,8 @@ class Manager:
     
     async def bp_backpack_keys(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -320,7 +333,8 @@ class Manager:
     
     async def bp_backpack_slots_total(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -329,7 +343,8 @@ class Manager:
     
     async def bp_backpack_slots_used(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.inventory:
             return
         if "440" not in user.inventory.inventories:
@@ -338,14 +353,16 @@ class Manager:
     
     async def bp_positive_trust(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.trust:
             return
         return user.trust.positive
     
     async def bp_negative_trust(self, steamid):
         steamid = str(steamid)
-        user = await self.bp_user_info([steamid])[steamid]
+        user = await self.bp_user_info([steamid])
+        user = user[steamid]
         if not user.trust:
             return
         return user.trust.negative
