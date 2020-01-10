@@ -3,6 +3,8 @@ An API wrapper for some TF2-related sites. Created by [manic](http://manic.tf/).
 
 These methods are designed so I can use this module rather than pasting functions into many blocks of code. It is not intended to be an API wrapper for every tf2 site. If you want to add some methods, feel free to make a pull request.
 
+Working in node.js? Check out [jstf](https://github.com/mninc/jstf)!
+
 # Installation
 Run `pip install pytf2`.
 
