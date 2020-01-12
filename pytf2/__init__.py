@@ -4,6 +4,11 @@ from pytf2 import bp_currency, bp_user, bp_price_history, bp_classifieds, item_d
 from time import time, sleep
 from lxml import html
 import cfscrape
+import json
+
+item_data.effects = json.loads(
+    requests.get("https://raw.githubusercontent.com/mninc/tf2-effects/master/effects.json").text
+)
 
 
 class Manager:
