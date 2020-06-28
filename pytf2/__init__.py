@@ -427,6 +427,7 @@ class Manager:
                     quality = item_data.qualities["Unusual"]
                     if elevated:  # Item already has quality (probably Strange Unusual)
                         use_elevated = True
+                    break
         
         for wear in item_data.wear_brackets:
             if name.endswith(wear):
@@ -568,6 +569,7 @@ class Manager:
                         quality = "Strange Unusual"
                     else:
                         quality = "Unusual"
+                    break
         
         craftable = 1
         if name.startswith("Non-Craftable"):
