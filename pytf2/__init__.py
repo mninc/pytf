@@ -13,11 +13,14 @@ item_data.effects = json.loads(
 
 class Manager:
     def __init__(self, cache: bool = True, bp_api_key: str = '', bp_user_token: str = '', mp_api_key: str = '',
-                 no_rate_limits: bool = False, bypass_cf: bool = False):
+                 no_rate_limits: bool = False, bypass_cf: bool = False,
+                 custom_session: requests.sessions.Session = None):
         self.no_rate_limits = no_rate_limits
         self._past_requests = []
         self.request = self.sync_request
-        if bypass_cf:
+        if custom_session:
+            self.requests = custom_session
+        elif bypass_cf:
             self.requests = cfscrape.create_scraper()
         else:
             self.requests = requests
