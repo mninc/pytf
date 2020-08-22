@@ -2,11 +2,12 @@ class ClassifiedValue:
     def __init__(self, data):
         self.metal = data.get("metal", 0)
         self.keys = data.get("keys", 0)
-
+        self.usd = data.get("usd", 0)
+    
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
-
-    def pretty_print(self, key: str="key", metal: str="ref"):
+    
+    def pretty_print(self, key: str = "key", metal: str = "ref"):
         if not self.keys and not self.metal:
             return ""
         elif not self.keys:
@@ -27,7 +28,7 @@ class ClassifiedItem:
         self.quality = data.get("quality")
         self.attributes = data.get("attributes")
         self.name = data.get("name")
-
+        
         if intent:
             self.id = data.get("id")
             self.original_id = data.get("original_id")
@@ -65,7 +66,7 @@ class Classified:
             self.created = data.get("created")
             self.bump = data.get("bump")
             self.automatic = bool(data.get("automatic", 0))
-
+    
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
@@ -73,8 +74,8 @@ class Classified:
 class Listings:
     def __init__(self, data):
         self.listings = [Classified(listing) for listing in data]
-
-    def get_highest_buyer(self, exclude: list="", automatic_only: bool=False):
+    
+    def get_highest_buyer(self, exclude: list = "", automatic_only: bool = False):
         # highest ref and highest keys
         highest_k = 0
         highest_r = 0
@@ -95,11 +96,12 @@ class Listings:
                     highest_r = listing.currencies.metal
                     highest = listing
         return highest
-
-    def get_lowest_seller(self, exlude: list="", automatic_only: bool=False):
+    
+    def get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False):
         # lowest ref and lowest keys
         lowest_k = 5000
         lowest_r = 5000
+        lowest_usd = 5000
         lowest = None
         for listing in self.listings:
             if listing.steamid in exlude:
@@ -108,16 +110,21 @@ class Listings:
                 if not listing.automatic:
                     continue
             if listing.intent == 1:
-                if listing.currencies.keys < lowest_k:
-                    lowest_k = listing.currencies.keys
-                    lowest_r = listing.currencies.metal
-                    lowest = listing
-                elif listing.currencies.keys == lowest_k and listing.currencies.metal < lowest_r:
-                    lowest_k = listing.currencies.keys
-                    lowest_r = listing.currencies.metal
-                    lowest = listing
+                if usd:
+                    if listing.currencies.usd and listing.currencies.usd < lowest_usd:
+                        lowest_usd = listing.currencies.usd
+                        lowest = listing
+                else:
+                    if listing.currencies.keys < lowest_k:
+                        lowest_k = listing.currencies.keys
+                        lowest_r = listing.currencies.metal
+                        lowest = listing
+                    elif listing.currencies.keys == lowest_k and listing.currencies.metal < lowest_r:
+                        lowest_k = listing.currencies.keys
+                        lowest_r = listing.currencies.metal
+                        lowest = listing
         return lowest
-
+    
     def get_listings_by_steamid(self, steamid):
         steamid = str(steamid)
         to_return = []
@@ -135,7 +142,7 @@ class Listings:
     
     def filter(self, filter_func):
         self.listings = list(filter(filter_func, self.listings))
-
+    
     def __add__(self, other):
         if other == 0:
             return self
@@ -170,4 +177,3 @@ class MyListings(Listings):
         self.cap = data["cap"]
         self.promotes_remaining = data["promotes_remaining"]
         Listings.__init__(self, data["listings"])
-

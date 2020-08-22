@@ -17,13 +17,15 @@ The exclude parameter should be an array of steamids to ignore (you probably wan
 
 The automatic_only should be set to true if you do not want non-automatic buyers.
 
-#### `get_lowest_seller(self, exclude: list="", automatic_only: bool=False)`
+#### `get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False)`
 
 Returns the lowest sell order, or `None` if there are none.
 
 The exclude parameter should be an array of steamids to ignore (you probably want to exclude yourself when fetching the lowest seller)
 
 The automatic_only should be set to true if you do not want non-automatic sellers.
+
+The usd parameter will set whether you want the lowest seller in keys/ref or in USD (because of marketplace.tf cross-listings). At the moment there is no support for getting both at the same time.
 
 #### `get_listings_by_steamid(self, steamid)`
 
