@@ -110,11 +110,11 @@ class Listings:
                 if not listing.automatic:
                     continue
             if listing.intent == 1:
-                if usd:
-                    if listing.currencies.usd and listing.currencies.usd < lowest_usd:
+                if usd and listing.currencies.usd:
+                    if listing.currencies.usd < lowest_usd:
                         lowest_usd = listing.currencies.usd
                         lowest = listing
-                else:
+                if not usd and not listing.currencies.usd:
                     if listing.currencies.keys < lowest_k:
                         lowest_k = listing.currencies.keys
                         lowest_r = listing.currencies.metal
