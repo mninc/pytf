@@ -9,13 +9,15 @@
 
 ### Methods:
 
-#### `get_highest_buyer(self, exclude: list="", automatic_only: bool=False)`
+#### `get_highest_buyer(self, exclude: list="", automatic_only: bool=False, exclude_paint: bool=False)`
 
 Returns the highest buy order, or `None` if there are none.
 
 The exclude parameter should be an array of steamids to ignore (you probably want to exclude yourself when fetching the highest buyer)
 
-The automatic_only should be set to true if you do not want non-automatic buyers.
+The automatic_only parameter should be set to true if you do not want non-automatic buyers.
+
+The exclude_paint parameter should be set to true if you want to exclude buy orders for painted hats.
 
 #### `get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False)`
 
@@ -23,9 +25,11 @@ Returns the lowest sell order, or `None` if there are none.
 
 The exclude parameter should be an array of steamids to ignore (you probably want to exclude yourself when fetching the lowest seller)
 
-The automatic_only should be set to true if you do not want non-automatic sellers.
+The automatic_only parameter should be set to true if you do not want non-automatic sellers.
 
 The usd parameter will set whether you want the lowest seller in keys/ref or in USD (because of marketplace.tf cross-listings). At the moment there is no support for getting both at the same time.
+
+The exclude_paint parameter should be set to true if you want to exclude sell orders for painted hats.
 
 #### `get_listings_by_steamid(self, steamid)`
 

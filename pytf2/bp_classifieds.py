@@ -1,3 +1,5 @@
+from pytf2 import item_data
+
 class ClassifiedValue:
     def __init__(self, data):
         self.metal = data.get("metal", 0)
@@ -26,7 +28,11 @@ class ClassifiedItem:
     def __init__(self, intent, data):
         self.defindex = data.get("defindex")
         self.quality = data.get("quality")
-        self.attributes = data.get("attributes")
+        self.attributes = data.get("attributes", [])
+        self.paint = None
+        for attribute in self.attributes:
+            if attribute["defindex"] == "142":
+                self.paint = item_data.paints[int(attribute["float_value"])]
         self.name = data.get("name")
         
         if intent:
@@ -75,7 +81,8 @@ class Listings:
     def __init__(self, data):
         self.listings = [Classified(listing) for listing in data]
     
-    def get_highest_buyer(self, exclude: list = "", automatic_only: bool = False):
+    def get_highest_buyer(self, exclude: list = "", automatic_only: bool = False,
+                          exclude_paint: bool = False):
         # highest ref and highest keys
         highest_k = 0
         highest_r = 0
@@ -85,6 +92,9 @@ class Listings:
                 continue
             if automatic_only:
                 if not listing.automatic:
+                    continue
+            if exclude_paint:
+                if listing.item.paint:
                     continue
             if listing.intent == 0:
                 if listing.currencies.keys > highest_k:
@@ -97,7 +107,8 @@ class Listings:
                     highest = listing
         return highest
     
-    def get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False):
+    def get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False,
+                          exclude_paint: bool = False):
         # lowest ref and lowest keys
         lowest_k = 5000
         lowest_r = 5000
@@ -108,6 +119,9 @@ class Listings:
                 continue
             if automatic_only:
                 if not listing.automatic:
+                    continue
+            if exclude_paint:
+                if listing.item.paint:
                     continue
             if listing.intent == 1:
                 if usd and listing.currencies.usd:
