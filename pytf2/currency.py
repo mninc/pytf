@@ -35,8 +35,12 @@ class Currency:
         self.keyprice = keyprice
         if scrap:
             self.scrap = scrap
+            self.raw_keys = 0
+            self.raw_metal = 0
         else:
             self.scrap = self.keys_to_scrap(keys, metal)
+            self.raw_keys = keys
+            self.raw_metal = metal
     
     @property
     def keys(self):
