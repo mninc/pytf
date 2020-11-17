@@ -1,3 +1,6 @@
+from pytf2.currency import Currency, keys_to_scrap
+
+
 class InventoryItem:
     def __init__(self, item, descriptions):
         self.item_data = item
@@ -85,3 +88,18 @@ class Inventory:
 
     def get_assets(self, item_name):
         return [item.assetid for item in self.get_items(item_name)]
+    
+    def get_currency(self, keyprice):
+        keys = 0
+        scrap = 0
+        for item in self.items:
+            if item.bp_name == "Mann Co. Supply Crate Key":
+                keys += 1
+            elif item.bp_name == "Refined Metal":
+                scrap += 9
+            elif item.bp_name == "Reclaimed Metal":
+                scrap += 3
+            elif item.bp_name == "Scrap Metal":
+                scrap += 1
+        scrap += keys_to_scrap(keyprice, keys, 0)
+        return Currency(scrap=scrap, keyprice=keyprice)
