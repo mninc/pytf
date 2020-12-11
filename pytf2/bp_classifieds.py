@@ -43,6 +43,16 @@ class ClassifiedItem:
             self.quantity = data.get("quantity")
             self.origin = data.get("origin")
             self.style = data.get("style")
+            
+            self.is_spelled = False
+            self.craft_number = -1
+            for attr in self.attributes:
+                if 1004 <= attr["defindex"] <= 1009:
+                    # I don't know a proper way to figure out what spell it is,
+                    # this seems ok for seeing if it has a spell at all
+                    self.is_spelled = True
+                if attr["defindex"] == 229:
+                    self.craft_number = attr["value"]
 
 
 class Classified:
