@@ -5,9 +5,9 @@ def keys_to_scrap(keyprice, keys, metal):
     return round(keys * round(keyprice * 9)) + round(metal * 9)
 
 
-def scrap_to_keys(keyprice, scrap):
+def scrap_to_keys(keyprice, scrap, force_ref=False):
     keys = 0
-    while scrap > round(keyprice * 9):
+    while not force_ref and scrap > round(keyprice * 9):
         keys += 1
         scrap -= round(keyprice * 9)
     ref = scrap / 9

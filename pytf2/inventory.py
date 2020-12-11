@@ -1,4 +1,4 @@
-from pytf2.currency import Currency, keys_to_scrap
+from pytf2.currency import Currency, scrap_to_keys
 
 
 class InventoryItem:
@@ -101,5 +101,5 @@ class Inventory:
                 scrap += 3
             elif item.bp_name == "Scrap Metal":
                 scrap += 1
-        scrap += keys_to_scrap(keyprice, keys, 0)
-        return Currency(scrap=scrap, keyprice=keyprice)
+        metal = scrap_to_keys(keyprice, scrap, force_ref=True)[1]
+        return Currency(keys=keys, metal=metal, keyprice=keyprice)
