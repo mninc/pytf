@@ -52,7 +52,7 @@ class ClassifiedItem:
                     # this seems ok for seeing if it has a spell at all
                     self.is_spelled = True
                 if attr["defindex"] == 229:
-                    self.craft_number = attr["value"]
+                    self.craft_number = int(attr["value"])
 
 
 class Classified:
