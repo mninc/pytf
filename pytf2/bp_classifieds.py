@@ -117,7 +117,7 @@ class Listings:
                     highest = listing
         return highest
     
-    def get_lowest_seller(self, exlude: list = "", automatic_only: bool = False, usd: bool = False,
+    def get_lowest_seller(self, exclude: list = "", automatic_only: bool = False, usd: bool = False,
                           exclude_paint: bool = False):
         # lowest ref and lowest keys
         lowest_k = 5000
@@ -125,7 +125,7 @@ class Listings:
         lowest_usd = 5000
         lowest = None
         for listing in self.listings:
-            if listing.steamid in exlude:
+            if listing.steamid in exclude:
                 continue
             if automatic_only:
                 if not listing.automatic:
