@@ -432,6 +432,9 @@ class Manager:
                         use_elevated = True
                     break
         
+        if name[:4] == "The ":
+            name = name[4:]
+        
         for wear in item_data.wear_brackets:
             if name.endswith(wear):
                 quality = item_data.qualities["Decorated Weapon"]
