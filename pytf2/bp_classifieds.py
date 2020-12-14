@@ -30,9 +30,15 @@ class ClassifiedItem:
         self.quality = data.get("quality")
         self.attributes = data.get("attributes", [])
         self.paint = None
+        self.parts = []
         for attribute in self.attributes:
             if attribute["defindex"] == "142":
                 self.paint = item_data.paints[int(attribute["float_value"])]
+            if attribute["defindex"] in ["380", "382", "384"]:
+                try:
+                    self.parts.append(item_data.parts[int(attribute["float_value"])])
+                except (IndexError, ValueError):
+                    continue
         self.name = data.get("name")
         
         if intent:
@@ -92,7 +98,7 @@ class Listings:
         self.listings = [Classified(listing) for listing in data]
     
     def get_highest_buyer(self, exclude: list = "", automatic_only: bool = False,
-                          exclude_paint: bool = False):
+                          exclude_paint: bool = False, exclude_parts: bool = False):
         # highest ref and highest keys
         highest_k = 0
         highest_r = 0
@@ -106,6 +112,9 @@ class Listings:
             if exclude_paint:
                 if listing.item.paint:
                     continue
+            if exclude_parts:
+                if len(listing.item.parts):
+                    continue
             if listing.intent == 0:
                 if listing.currencies.keys > highest_k:
                     highest_k = listing.currencies.keys
@@ -118,7 +127,7 @@ class Listings:
         return highest
     
     def get_lowest_seller(self, exclude: list = "", automatic_only: bool = False, usd: bool = False,
-                          exclude_paint: bool = False):
+                          exclude_paint: bool = False, exclude_parts: bool = False):
         # lowest ref and lowest keys
         lowest_k = 5000
         lowest_r = 5000
@@ -132,6 +141,9 @@ class Listings:
                     continue
             if exclude_paint:
                 if listing.item.paint:
+                    continue
+            if exclude_parts:
+                if len(listing.item.parts):
                     continue
             if listing.intent == 1:
                 if usd and listing.currencies.usd:
