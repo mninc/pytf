@@ -31,6 +31,8 @@ class ClassifiedItem:
         self.attributes = data.get("attributes", [])
         self.paint = None
         self.parts = []
+        self.sheen = False
+        self.killstreaker = False
         for attribute in self.attributes:
             if attribute["defindex"] == "142":
                 self.paint = item_data.paints[int(attribute["float_value"])]
@@ -39,6 +41,10 @@ class ClassifiedItem:
                     self.parts.append(item_data.parts[int(attribute["float_value"])])
                 except (IndexError, ValueError):
                     continue
+            if attribute["defindex"] == "2014":
+                self.sheen = True
+            if attribute["defindex"] == "2013":
+                self.killstreaker = True
         self.name = data.get("name")
         
         if intent:
@@ -98,7 +104,8 @@ class Listings:
         self.listings = [Classified(listing) for listing in data]
     
     def get_highest_buyer(self, exclude: list = "", automatic_only: bool = False,
-                          exclude_paint: bool = False, exclude_parts: bool = False):
+                          exclude_paint: bool = False, exclude_parts: bool = False, exclude_sheen=False,
+                          exclude_killstreaker=False):
         # highest ref and highest keys
         highest_k = 0
         highest_r = 0
@@ -114,6 +121,12 @@ class Listings:
                     continue
             if exclude_parts:
                 if len(listing.item.parts):
+                    continue
+            if exclude_sheen:
+                if listing.item.sheen:
+                    continue
+            if exclude_killstreaker:
+                if listing.item.killstreaker:
                     continue
             if listing.intent == 0:
                 if listing.currencies.keys > highest_k:
